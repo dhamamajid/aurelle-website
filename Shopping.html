@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aurelle</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&display=swap" rel="stylesheet">
+    <link hreft="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="stylesheet.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="logo.png" type="image/png">
+</head>
+<body>
+    <div class="wrapper">
+        <div class="top-bar">
+            <div class="logo-area">
+                <a href="index.html">
+                <img src="logo.png" alt="Aurelle Logo" class="logo-image">
+                <span>Aurelle</span>
+                </a>
+            </div>
+            <div class="nav-links">
+                <a href="Shopping.html">Shop</a>
+                <a href="About_us.html">About us</a>
+                <a href="contact_us.html">Contact us</a>
+            </div>
+            <div class="account-cart-search">
+                <img src="search icon.png" alt="search" class="icon">
+                            <a href="cart.html" class="cart-link"><img src="cart icon.png" alt="Cart" class="icon"><span class="cart-count" id="cart-count">0</span></a>   
+              <a href="Account.html"><img src="account icon.png" alt="Account" class="icon"></a>
+            </div>
+        </div>
+<!-- Here we put the product for shopping --> 
+        <div class="products-container">
+            <div class="product-card">
+                <img src="Product1.png" alt="Product 1" class="product-image">
+             <a href="Product1.html"><button class="product-button">Everlasting Vanilla</button></a>
+            </div>
+            <div class="product-card">
+                <img src="Product2.png" alt="Product 2" class="product-image">
+             <a href="Product2.html"><button class="product-button">Product 2</button></a>
+            </div>
+            <div class="product-card">
+                <img src="Product3.png" alt="Product 3" class="product-image">
+                <a href="Product3.html"><button class="product-button">Product 3</button></a>
+            </div>
+        </div>
+
+    <footer>
+        <!-- footer: terms and conditions, policies, social media icons -->
+        <div class="Term-Policy">
+            <a href="Terms-and-conditions.html">Terms and Conditions</a>
+            <a href="Policies.html">Policies</a>
+        </div>
+        <div class="social-media">
+            <a href="https://www.instagram.com/aurelle.perfume/"><img src="instagram logo.png" alt="Instagram" class="icon"></a>
+            <a href="#"><img src="tiktok icon.png" alt="TikTok" class="icon"></a>
+        </div>
+    </footer>
+    <script>
+        function updateCartCount() {
+            const cart = JSON.parse(localStorage.getItem('cart')) || [];
+            const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+            document.getElementById('cart-count').textContent = totalItems;
+        }
+        updateCartCount();
+    </script>
+</body>
+</html>

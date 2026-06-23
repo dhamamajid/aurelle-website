@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aurelle</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&display=swap" rel="stylesheet">
+    <link hreft="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="stylesheet.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="logo.png" type="image/png">
+</head>
+<body>
+    <div class="wrapper">
+        <div class="top-bar">
+            <div class="logo-area">
+               <a href="index.html">
+                <img src="logo.png" alt="Aurelle Logo" class="logo-image">
+                <span>Aurelle</span>
+                </a>
+            </div>
+            <div class="nav-links">
+                <a href="Shopping.html">Shop</a>
+                <a href="About_us.html">About us</a>
+                <a href="contact_us.html">Contact us</a>
+            </div>
+            <div class="account-cart-search">
+                <img src="search icon.png" alt="search" class="icon">
+              <a href="cart.html" class="cart-link"><img src="cart icon.png" alt="Cart" class="icon"><span id="cart-count" class="cart-count">0</span></a>                
+              <a href="Account.html"><img src="account icon.png" alt="Account" class="icon"></a>
+            </div>
+        </div>
+        <!-- the story about us -->
+        <div class="main-content-flex">
+            <h1 class="about-title">About us</h1>
+    
+            <div class="scroll-container">
+                <!--Sticky Image section-->
+                <div class="sticky-image">
+                    <img src="About_us.png" alt="About us">
+                </div>
+
+            <!--Scrolling Text Section-->
+                <div class="text-scroll">
+                    <p class="about-content">
+                        At Aurelle, fragrance is not simply worn. It is experienced. It is a quiet expression of identity, a reflection of moments that shape us, and a subtle yet powerful connection between memory and emotion.
+                    </p>   
+
+                    <p class="about-content">
+                        Founded in 2024 in Leuven, Belgium, Aurelle began as a personal vision, one rooted in passion, discipline, and the desire to create something meaningful. 
+                        Built during student years and shaped by an immigrant background, the brand represents more than perfumery; it is the result of dedication, persistence, and the belief that something truly personal can resonate with others. 
+                        Every free moment was invested into bringing Aurelle to life, with the intention of sharing something authentic with those who value depth, quality, and individuality.
+                    </p>
+
+                    <p class="about-content">
+                        Aurelle is defined by a minimal yet modern approach, balanced with a sense of understated luxury. 
+                        We create fragrances for all genders, designed to accompany life’s most important moments. Whether bold, intimate, or unforgettable. 
+                        Each scent is developed as a story, carefully composed to evoke emotion and create lasting impressions.
+                    </p>
+
+                    <p class="about-content">
+                        Our approach to perfumery is both creative and intentional. 
+                        We focus on niche, experimental compositions, introducing new fragrances over timeeach with its own distinct character and identity. 
+                        Rather than following trends, we explore originality, allowing each creation to stand on its own. 
+                        Our perfumes are produced in small batches, ensuring attention to detail, exclusivity, and a consistently high standard of quality. When a fragrance resonates deeply, it may return, driven not by mass production, but by genuine demand.
+                    </p>
+                    
+                    <p class="about-content">
+                        Performance is at the core of every creation. 
+                        Aurelle fragrances are crafted to be long-lasting, evolving throughout the day and leaving a refined, memorable trail. 
+                        At the same time, each scent is designed to feel personal, adapting to the wearer and becoming uniquely theirs.
+                    </p>
+                
+                    <p class="about-content">
+                        We believe that scent has the power to capture moments in a way nothing else can. 
+                        A fragrance can remind you of a place, a person, or a feeling. Sometimes all at once. 
+                        This belief is at the heart of Aurelle: creating perfumes that are not only worn, but remembered.
+                    </p>
+                    
+                    <p class="about-content">
+                        As we continue to grow, our vision is clear. To evolve into a trusted and recognized name within the world of luxury niche perfumery, while remaining true to our origins. 
+                        Independence allows us to create freely, guided by passion rather than convention.
+                    </p>
+
+                    <p class="about-content">
+                        Aurelle is an invitation to explore, to feel, and to discover a fragrance that becomes part of your story.
+                    </p>
+                </div>
+            </div>
+        </div>
+    <footer>
+        <!-- footer: terms and conditions, policies, social media icons -->
+        <div class="Term-Policy">
+            <a href="Terms-and-conditions.html">Terms and Conditions</a>
+            <a href="Policies.html">Policies</a>
+        </div>
+        <div class="social-media">
+            <a href="https://www.instagram.com/aurelle.perfume/"><img src="instagram logo.png" alt="Instagram" class="icon"></a>
+            <a href="#"><img src="tiktok icon.png" alt="TikTok" class="icon"></a>
+        </div>
+    </footer>
+    <script>
+        // Function to update cart count display
+        function updateCartCount() {
+            const cart = JSON.parse(localStorage.getItem("cart")) || [];
+            let totalItems = 0;
+            
+            cart.forEach(item => {
+                totalItems += item.quantity;
+            });
+            
+            document.getElementById('cart-count').textContent = totalItems;
+        }
+
+        // Initialize cart count on page load
+        updateCartCount();
+    </script>
+</body>
+</html>
+

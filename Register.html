@@ -1,0 +1,247 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aurelle</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&display=swap" rel="stylesheet">
+    <link hreft="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="stylesheet.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="logo.png" type="image/png">
+</head>
+<body>
+    <div class="wrapper">
+        <div class="top-bar">
+            <div class="logo-area">
+               <a href="index.html">
+                <img src="logo.png" alt="Aurelle Logo" class="logo-image">
+                <span>Aurelle</span>
+                </a>
+            </div>
+            <div class="nav-links">
+                <a href="Shopping.html">Shop</a>
+                <a href="About_us.html">About us</a>
+                <a href="contact_us.html">Contact us</a>
+            </div>
+            <div class="account-cart-search">
+                <img src="search icon.png" alt="search" class="icon">
+              <a href="cart.html"><img src="cart icon.png" alt="Cart" class="icon"><span class="cart-count" id="cart-count">0</span></a>  
+               <a href="Account.html"> <img src="account icon.png" alt="Account" class="icon"> </a>
+            </div>
+        </div>
+    </div>
+    <div class="Log-in-content">
+        <h1 class="log-in-title-flex">Register</h1>
+     <!-- Main Content -->
+  <main class="container">
+    <form id="register-form" action="#" method="POST">
+
+      <input 
+        type="text" 
+        id="Name" 
+        name="name"
+        placeholder="Enter your name" 
+        required
+        autocomplete="name"
+      >
+      <input 
+        type="email" 
+        id="email" 
+        name="email"
+        placeholder="Enter your e-mail" 
+        required
+        autocomplete="email"
+      >
+      <input 
+        type="email" 
+        id="confirm-email" 
+        name="confirm-email"
+        placeholder="Confirm your e-mail" 
+        required
+        autocomplete="email"
+      >
+        <!-- Password field with toggle visibility inside the box -->
+      <div class="password-container">
+        <div class="password-row">
+          <input 
+            type="password" 
+            id="password" 
+            name="password"
+            placeholder="Password" 
+            required
+            autocomplete="current-password"
+          >
+          <button type="button" class="password-toggle" id="password-toggle" aria-label="Show or hide password">
+            <img src="open-eye.png" alt="Show password" id="password-toggle-icon">
+          </button>
+        </div>
+
+        <div class="password-row">
+          <input 
+            type="password" 
+            id="confirm-password" 
+            name="confirm-password"
+            placeholder="Confirm password" 
+            required
+            autocomplete="current-password"
+          >
+          <button type="button" class="password-toggle" id="confirm-password-toggle" aria-label="Show or hide confirm password">
+            <img src="open-eye.png" alt="Show confirm password" id="confirm-password-toggle-icon">
+          </button>
+        </div>
+      </div>
+
+      <button type="submit">Register</button>
+    </form>
+<div class="links">
+      <a href="cart.html">Shop as a guest</a>
+ </div>
+  </main>
+
+    </div>
+    <footer>
+        <!-- footer: terms and conditions, policies, social media icons -->
+        <div class="Term-Policy">
+            <a href="Terms-and-conditions.html">Terms and Conditions</a>
+            <a href="Policies.html">Policies</a>
+        </div>
+        <div class="social-media">
+            <a href="https://www.instagram.com/aurelle.perfume/"><img src="instagram logo.png" alt="Instagram" class="icon"></a>
+            <a href="#"><img src="tiktok icon.png" alt="TikTok" class="icon"></a>
+        </div>
+    </footer>
+</body>
+
+
+    <script>
+        function updateCartCount() {
+            const cart = JSON.parse(localStorage.getItem('cart')) || [];
+            const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+            document.getElementById('cart-count').textContent = totalItems;
+        }
+        updateCartCount();
+    </script>
+ <script>
+        (function() {
+            const toggleBtn = document.getElementById('password-toggle');
+            const passwordField = document.getElementById('password');
+            const toggleIcon = document.getElementById('password-toggle-icon');
+
+            if (toggleBtn && passwordField && toggleIcon) {
+                // Function to toggle visibility and update icon
+                const togglePassword = () => {
+                    const isPassword = passwordField.type === 'password';
+                    passwordField.type = isPassword ? 'text' : 'password';
+                    // Switch icon: open-eye (hidden) → closed-eye (visible)
+                    toggleIcon.src = isPassword ? 'closed-eye.png' : 'open-eye.png';
+                    toggleIcon.alt = isPassword ? 'Hide password' : 'Show password';
+                    // Keep focus inside the input after toggle
+                    passwordField.focus();
+                };
+
+                // Click event for the eye button
+                toggleBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    togglePassword();
+                });
+
+                // Optional: allow keyboard activation (Enter / Space)
+                toggleBtn.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        togglePassword();
+                    }
+                });
+
+                // Ensure initial state is consistent
+                if (passwordField.type !== 'password') {
+                    passwordField.type = 'password';
+                    toggleIcon.src = 'open-eye.png';
+                    toggleIcon.alt = 'Show password';
+                }
+            }
+
+            // Optional: simple client-side validation (matches your style)
+            const form = document.getElementById('register-form');
+            const submitBtn = form ? form.querySelector('button[type="submit"]') : null;
+            const passwordEl = document.getElementById('password');
+            const confirmPasswordEl = document.getElementById('confirm-password');
+
+            const updateSubmitState = () => {
+                if (!submitBtn || !passwordEl || !confirmPasswordEl) return;
+                const match = passwordEl.value && passwordEl.value === confirmPasswordEl.value;
+                submitBtn.disabled = !match;
+                confirmPasswordEl.style.borderColor = match || !confirmPasswordEl.value ? '#000' : '#f00';
+            };
+
+            if (passwordEl && confirmPasswordEl) {
+                passwordEl.addEventListener('input', updateSubmitState);
+                confirmPasswordEl.addEventListener('input', updateSubmitState);
+                updateSubmitState();
+            }
+
+            if (form) {
+                form.addEventListener('submit', (e) => {
+                    const email = document.getElementById('email');
+                    const pwd = document.getElementById('password');
+                    if (!email.value.trim()) {
+                        e.preventDefault();
+                        alert('Please enter your e-mail address.');
+                        email.focus();
+                    } else if (!pwd.value) {
+                        e.preventDefault();
+                        alert('Please enter your password.');
+                        pwd.focus();
+                    } else if (pwd.value !== confirmPasswordEl.value) {
+                        e.preventDefault();
+                        alert('Passwords do not match. Please confirm exactly.');
+                        confirmPasswordEl.focus();
+                    }
+                    // You can replace this with actual AJAX or backend call later
+                });
+            }
+        })();
+
+        (function() {
+            const toggleBtn = document.getElementById('confirm-password-toggle');
+            const passwordField = document.getElementById('confirm-password');
+            const toggleIcon = document.getElementById('confirm-password-toggle-icon');
+
+            if (toggleBtn && passwordField && toggleIcon) {
+                // Function to toggle visibility and update icon
+                const togglePassword = () => {
+                    const isPassword = passwordField.type === 'password';
+                    passwordField.type = isPassword ? 'text' : 'password';
+                    // Switch icon: open-eye (hidden) → closed-eye (visible)
+                    toggleIcon.src = isPassword ? 'closed-eye.png' : 'open-eye.png';
+                    toggleIcon.alt = isPassword ? 'Hide password' : 'Show password';
+                    // Keep focus inside the input after toggle
+                    passwordField.focus();
+                };
+
+                // Click event for the eye button
+                toggleBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    togglePassword();
+                });
+
+                // Optional: allow keyboard activation (Enter / Space)
+                toggleBtn.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        togglePassword();
+                    }
+                });
+
+                // Ensure initial state is consistent
+                if (passwordField.type !== 'password') {
+                    passwordField.type = 'password';
+                    toggleIcon.src = 'open-eye.png';
+                    toggleIcon.alt = 'Show password';
+                }
+            }
+        })();
+    </script>
+</html>
+

@@ -1,0 +1,225 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aurelle - Payment</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="stylesheet.css">
+    <link rel="icon" href="logo.png" type="image/png">
+</head>
+<body>
+    <div class="wrapper">
+        <div class="top-bar">
+            <div class="logo-area">
+                <a href="index.html">
+                    <img src="logo.png" alt="Aurelle Logo" class="logo-image">
+                    <span>Aurelle</span>
+                </a>
+            </div>
+            <div class="nav-links">
+                <a href="Shopping.html">Shop</a>
+                <a href="About_us.html">About us</a>
+                <a href="contact_us.html">Contact us</a>
+            </div>
+            <div class="account-cart-search">
+                <img src="search icon.png" alt="search" class="icon">
+                <a href="cart.html" class="cart-link"><img src="cart icon.png" alt="Cart" class="icon"><span class="cart-count" id="cart-count">0</span></a>
+                <a href="Account.html"><img src="account icon.png" alt="Account" class="icon"></a>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <div class="checkout-content" style="max-width:700px; margin:40px auto;">
+                <h2 class="checkout-title">Payment</h2>
+                <p class="cart-item-meta">Review the amount and complete your payment.</p>
+
+                <div class="summary-section">
+                    <h3 class="summary-section-title">Amount to Pay</h3>
+                    <p id="pay-subtotal" class="summary-subtotal"></p>
+                </div>
+
+                <hr class="summary-divider">
+
+                <div class="checkout-field">
+                    <label for="payment-method">Choose Payment Method</label>
+                    <select id="payment-method">
+                        <option value="paypal">PayPal</option>
+                        <option value="stripe">Stripe</option>
+                        <option value="bank">Bank Transfer</option>
+                    </select>
+                </div>
+
+                <div id="paypal-section" class="summary-section" style="margin-top: 16px;">
+                    <h3 class="summary-section-title">Pay with PayPal</h3>
+                    <p class="cart-item-meta" id="paypal-status"></p>
+                    <div id="paypal-button-container"></div>
+                </div>
+
+                <div id="stripe-section" class="summary-section" style="display:none; margin-top: 16px;">
+                    <h3 class="summary-section-title">Pay with Stripe</h3>
+                    <p class="cart-item-meta">You will be redirected to Stripe Checkout.</p>
+                    <button class="product-button" id="stripe-btn">Continue to Stripe</button>
+                </div>
+
+                <div id="bank-section" class="summary-section" style="display:none; margin-top: 16px;">
+                    <h3 class="summary-section-title">Bank Transfer</h3>
+                    <p class="cart-item-meta"><strong>Account name:</strong> Aurelle Perfumes</p>
+                    <p class="cart-item-meta"><strong>IBAN:</strong> BE00 0000 0000 0000</p>
+                    <p class="cart-item-meta"><strong>BIC/SWIFT:</strong> BBRUBEBB</p>
+                    <p class="cart-item-meta"><strong>Reference:</strong> <span id="bank-reference"></span></p>
+                    <p class="cart-item-meta">Use the exact reference so we can match your payment.</p>
+                    <button class="product-button" id="bank-confirm-btn">I Have Made The Transfer</button>
+                </div>
+
+                <div class="cart-actions" style="position:static; margin-top:24px; justify-content:flex-end;">
+                    <a href="order_summary.html" class="product-button cart-action-link">Back</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="Term-Policy">
+            <a href="Terms-and-conditions.html">Terms and Conditions</a>
+            <a href="Policies.html">Policies</a>
+        </div>
+        <div class="social-media">
+            <a href="https://www.instagram.com/aurelle.perfume/"><img src="instagram logo.png" alt="Instagram" class="icon"></a>
+            <a href="#"><img src="tiktok icon.png" alt="TikTok" class="icon"></a>
+        </div>
+    </footer>
+
+<script>
+    const PAYMENT_CONFIG = {
+        currency: 'EUR',
+        paypalClientId: 'REPLACE_WITH_PAYPAL_CLIENT_ID',
+        stripeCheckoutUrl: 'REPLACE_WITH_STRIPE_CHECKOUT_URL'
+    };
+
+    function updateCartCount() {
+        const cart = JSON.parse(localStorage.getItem('cart')) || [];
+        const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+        document.getElementById('cart-count').textContent = totalItems;
+    }
+    updateCartCount();
+
+    const subtotal = sessionStorage.getItem('paymentSubtotal');
+    const subtotalAmount = Number(subtotal || 0);
+    const subtotalEl = document.getElementById('pay-subtotal');
+    const bankReference = 'AUR-' + Date.now();
+
+    document.getElementById('bank-reference').textContent = bankReference;
+
+    if (!subtotal || Number.isNaN(subtotalAmount) || subtotalAmount <= 0) {
+        subtotalEl.textContent = 'No subtotal found. Please return to order summary.';
+    } else {
+        subtotalEl.textContent = 'Subtotal: €' + subtotalAmount.toFixed(2);
+    }
+
+    function finalizeOrder(message) {
+        localStorage.removeItem('cart');
+        sessionStorage.removeItem('deliveryInfo');
+        sessionStorage.removeItem('paymentSubtotal');
+        alert(message);
+        window.location.href = 'index.html';
+    }
+
+    const paymentMethod = document.getElementById('payment-method');
+    const paypalSection = document.getElementById('paypal-section');
+    const stripeSection = document.getElementById('stripe-section');
+    const bankSection = document.getElementById('bank-section');
+
+    function togglePaymentSections(method) {
+        paypalSection.style.display = method === 'paypal' ? 'block' : 'none';
+        stripeSection.style.display = method === 'stripe' ? 'block' : 'none';
+        bankSection.style.display = method === 'bank' ? 'block' : 'none';
+    }
+
+    paymentMethod.addEventListener('change', function() {
+        togglePaymentSections(paymentMethod.value);
+    });
+
+    togglePaymentSections(paymentMethod.value);
+
+    document.getElementById('stripe-btn').addEventListener('click', function() {
+        if (!subtotal || subtotalAmount <= 0) {
+            alert('Subtotal is missing. Please go back and confirm your order again.');
+            return;
+        }
+
+        if (!PAYMENT_CONFIG.stripeCheckoutUrl || PAYMENT_CONFIG.stripeCheckoutUrl.indexOf('REPLACE_WITH_') === 0) {
+            alert('Stripe is not configured yet. Add your Stripe checkout URL in payment.html.');
+            return;
+        }
+
+        sessionStorage.setItem('bankTransferReference', bankReference);
+        window.location.href = PAYMENT_CONFIG.stripeCheckoutUrl;
+    });
+
+    document.getElementById('bank-confirm-btn').addEventListener('click', function() {
+        if (!subtotal || subtotalAmount <= 0) {
+            alert('Subtotal is missing. Please go back and confirm your order again.');
+            return;
+        }
+
+        sessionStorage.setItem('bankTransferReference', bankReference);
+        finalizeOrder('Bank transfer marked as pending. We will confirm your order after receiving the payment.');
+    });
+
+    function loadPayPalButtons() {
+        const status = document.getElementById('paypal-status');
+
+        if (!subtotal || subtotalAmount <= 0) {
+            status.textContent = 'Subtotal missing. Go back to Order Summary first.';
+            return;
+        }
+
+        if (!PAYMENT_CONFIG.paypalClientId || PAYMENT_CONFIG.paypalClientId.indexOf('REPLACE_WITH_') === 0) {
+            status.textContent = 'PayPal is not configured yet. Add your PayPal client ID in payment.html.';
+            return;
+        }
+
+        status.textContent = '';
+        const script = document.createElement('script');
+        script.src = 'https://www.paypal.com/sdk/js?client-id=' + encodeURIComponent(PAYMENT_CONFIG.paypalClientId) + '&currency=' + encodeURIComponent(PAYMENT_CONFIG.currency);
+        script.onload = function() {
+            if (!window.paypal) {
+                status.textContent = 'Could not load PayPal. Please try again.';
+                return;
+            }
+
+            window.paypal.Buttons({
+                createOrder: function(data, actions) {
+                    return actions.order.create({
+                        purchase_units: [{
+                            amount: {
+                                currency_code: PAYMENT_CONFIG.currency,
+                                value: subtotalAmount.toFixed(2)
+                            },
+                            description: 'Aurelle order payment'
+                        }]
+                    });
+                },
+                onApprove: function(data, actions) {
+                    return actions.order.capture().then(function() {
+                        finalizeOrder('PayPal payment successful. Thank you for your order.');
+                    });
+                },
+                onError: function() {
+                    alert('PayPal payment failed. Please try again.');
+                }
+            }).render('#paypal-button-container');
+        };
+
+        script.onerror = function() {
+            status.textContent = 'Could not load PayPal SDK. Check your internet connection and client ID.';
+        };
+
+        document.body.appendChild(script);
+    }
+
+    loadPayPalButtons();
+</script>
+</body>
+</html>

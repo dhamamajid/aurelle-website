@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aurelle – Order Summary</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&display=swap" rel="stylesheet">
+    <link hreft="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="stylesheet.css">
+    <link rel="icon" href="logo.png" type="image/png">
+</head>
+<body>
+    <div class="wrapper">
+        <div class="top-bar">
+            <div class="logo-area">
+               <a href="index.html">
+                <img src="logo.png" alt="Aurelle Logo" class="logo-image">
+                <span>Aurelle</span>
+                </a>
+            </div>
+            <div class="nav-links">
+                <a href="Shopping.html">Shop</a>
+                <a href="About_us.html">About us</a>
+                <a href="contact_us.html">Contact us</a>
+            </div>
+            <div class="account-cart-search">
+                <img src="search icon.png" alt="search" class="icon">
+                <a href="cart.html" class="cart-link"><img src="cart icon.png" alt="Cart" class="icon"><span class="cart-count" id="cart-count">0</span></a>
+                <a href="Account.html"><img src="account icon.png" alt="Account" class="icon"></a>
+            </div>
+        </div>
+
+        <div class="main-content">
+            <img src="Cart-order-step3.png" alt="Order Steps" class="order-steps-image">
+
+            <div class="checkout-content">
+                <h2 class="checkout-title">Order Summary</h2>
+
+                <!-- Cart items -->
+                <div class="summary-section">
+                    <h3 class="summary-section-title">Your Items</h3>
+                    <div id="summary-items"></div>
+                    <p id="summary-subtotal" class="summary-subtotal"></p>
+                </div>
+
+                <hr class="summary-divider">
+
+                <!-- Delivery info -->
+                <div class="summary-section">
+                    <h3 class="summary-section-title">Delivery Details</h3>
+                    <div id="summary-delivery" class="summary-delivery-grid"></div>
+                </div>
+
+                <hr class="summary-divider">
+
+                <div class="cart-actions" style="position:static; margin-top: 30px; justify-content: flex-end;">
+                    <button class="product-button" id="confirm-btn">Confirm Order</button>
+                    <a href="Check_out_info.html" class="product-button cart-action-link">Edit Details</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="Term-Policy">
+            <a href="Terms-and-conditions.html">Terms and Conditions</a>
+            <a href="Policies.html">Policies</a>
+        </div>
+        <div class="social-media">
+            <a href="https://www.instagram.com/aurelle.perfume/"><img src="instagram logo.png" alt="Instagram" class="icon"></a>
+            <a href="#"><img src="tiktok icon.png" alt="TikTok" class="icon"></a>
+        </div>
+    </footer>
+
+<script>
+    // Cart count badge
+    function updateCartCount() {
+        const cart = JSON.parse(localStorage.getItem('cart')) || [];
+        const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+        document.getElementById('cart-count').textContent = totalItems;
+    }
+    updateCartCount();
+
+    // Render cart items
+    const cart = JSON.parse(localStorage.getItem('cart')) || [];
+    const itemsContainer = document.getElementById('summary-items');
+    const subtotalEl = document.getElementById('summary-subtotal');
+    let subtotal = 0;
+
+    if (cart.length === 0) {
+        itemsContainer.innerHTML = "<p class='cart-empty-msg'>No items in cart.</p>";
+    } else {
+        cart.forEach(item => {
+            subtotal += item.price * item.quantity;
+            const row = document.createElement('div');
+            row.classList.add('summary-item-row');
+            row.innerHTML = `
+                <img src="${item.image}" class="summary-item-image">
+                <div class="summary-item-info">
+                    <span class="cart-item-name">${item.name}</span>
+                    <span class="cart-item-meta">Volume: ${item.volume}</span>
+                    <span class="cart-item-meta">Qty: ${item.quantity} × €${item.price.toFixed(2)}</span>
+                </div>
+                <span class="summary-item-total">€${(item.price * item.quantity).toFixed(2)}</span>
+            `;
+            itemsContainer.appendChild(row);
+        });
+    }
+    subtotalEl.textContent = 'Subtotal: €' + subtotal.toFixed(2);
+
+    // Render delivery info
+    const info = JSON.parse(sessionStorage.getItem('deliveryInfo')) || {};
+    const deliveryContainer = document.getElementById('summary-delivery');
+
+    const fields = [
+        ['Name',           (info.firstName || '') + ' ' + (info.lastName || '')],
+        ['Email',          info.email    || '—'],
+        ['Phone',          info.phone    || '—'],
+        ['Address',        info.address  || '—'],
+        ['City',           info.city     || '—'],
+        ['Postal Code',    info.postal   || '—'],
+        ['Country',        info.country  || '—'],
+        ['Order Notes',    info.notes    || '—'],
+    ];
+
+    fields.forEach(([label, value]) => {
+        const row = document.createElement('div');
+        row.classList.add('summary-delivery-row');
+        row.innerHTML = `<span class="summary-label">${label}</span><span class="summary-value">${value}</span>`;
+        deliveryContainer.appendChild(row);
+    });
+
+    // Confirm order button
+    document.getElementById('confirm-btn').addEventListener('click', function() {
+        if (cart.length === 0) {
+            alert('Your cart is empty. Add items before confirming the order.');
+            return;
+        }
+
+        sessionStorage.setItem('paymentSubtotal', subtotal.toFixed(2));
+        window.location.href = 'payment.html';
+    });
+</script>
+</body>
+</html>

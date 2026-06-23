@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aurelle</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&display=swap" rel="stylesheet">
+    <link hreft="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="stylesheet.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="logo.png" type="image/png">
+</head>
+<body>
+    <div class="wrapper">
+        <div class="top-bar">
+            <div class="logo-area">
+               <a href="index.html">
+                <img src="logo.png" alt="Aurelle Logo" class="logo-image">
+                <span>Aurelle</span>
+                </a>
+            </div>
+            <div class="nav-links">
+                <a href="Shopping.html">Shop</a>
+                <a href="About_us.html">About us</a>
+                <a href="contact_us.html">Contact us</a>
+            </div>
+            <div class="account-cart-search">
+                <img src="search icon.png" alt="search" class="icon">
+                            <a href="cart.html" class="cart-link"><img src="cart icon.png" alt="Cart" class="icon"><span class="cart-count" id="cart-count">0</span></a>                
+              <a href="Account.html"><img src="account icon.png" alt="Account" class="icon"></a>
+            </div>
+        </div>
+        <!-- main cart block -->
+        <div class="main-content">
+            <h2 class="cart-title">Shopping Cart</h2>
+            <div id="cart-container"></div>
+            <h3 id="subtotal"></h3>
+            <div class="cart-actions">
+                <a href="Check_out_info.html" class="product-button cart-action-link">Checkout</a>
+                <a href="Shopping.html" class="product-button cart-action-link">Back to Shop</a>
+            </div>
+            <img src="Cart-order-step1.png" alt="Order Steps" class="order-steps-image"> 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+            </div>
+        </div>
+    <footer>
+        <!-- footer: terms and conditions, policies, social media icons -->
+        <div class="Term-Policy">
+            <a href="Terms-and-conditions.html">Terms and Conditions</a>
+            <a href="Policies.html">Policies</a>
+        </div>
+        <div class="social-media">
+            <a href="https://www.instagram.com/aurelle.perfume/"><img src="instagram logo.png" alt="Instagram" class="icon"></a>
+            <a href="#"><img src="tiktok icon.png" alt="TikTok" class="icon"></a>
+        </div>
+    </footer>
+<script>
+function loadCart() {
+    const cart = JSON.parse(localStorage.getItem("cart")) || [];
+    const container = document.getElementById("cart-container");
+    const subtotalEl = document.getElementById("subtotal");
+
+    container.innerHTML = "";
+    let subtotal = 0;
+
+    if (cart.length === 0) {
+        container.innerHTML = "<p class='cart-empty-msg'>Your cart is empty.</p>";
+        subtotalEl.textContent = "";
+        return;
+    }
+
+    cart.forEach((item, index) => {
+        subtotal += item.price * item.quantity;
+
+        const div = document.createElement("div");
+        div.classList.add("cart-item");
+
+        div.innerHTML = `
+            <img src="${item.image}" class="cart-item-image">
+            <div class="cart-item-details">
+                <h3 class="cart-item-name">${item.name}</h3>
+                <p class="cart-item-meta">Volume: ${item.volume}</p>
+                <p class="cart-item-meta">Price: €${item.price}</p>
+                <div class="cart-item-qty">
+                    <button class="product-button" onclick="changeQuantity(${index}, -1)">−</button>
+                    <span class="cart-item-qty-count">${item.quantity}</span>
+                    <button class="product-button" onclick="changeQuantity(${index}, 1)">+</button>
+                </div>
+                <button class="product-button cart-item-remove" onclick="removeItem(${index})">Remove</button>
+            </div>
+        `;
+
+        container.appendChild(div);
+    });
+
+    subtotalEl.textContent = "Subtotal: €" + subtotal.toFixed(2);
+}
+
+function changeQuantity(index, change) {
+    let cart = JSON.parse(localStorage.getItem("cart")) || [];
+
+    cart[index].quantity += change;
+
+    if (cart[index].quantity <= 0) {
+        cart.splice(index, 1);
+    }
+
+    localStorage.setItem("cart", JSON.stringify(cart));
+    loadCart();
+    updateCartCount();
+}
+
+function removeItem(index) {
+    let cart = JSON.parse(localStorage.getItem("cart")) || [];
+
+    cart.splice(index, 1);
+
+    localStorage.setItem("cart", JSON.stringify(cart));
+    loadCart();
+    updateCartCount();
+}
+
+// Load cart on page open
+loadCart();
+
+function updateCartCount() {
+    const cart = JSON.parse(localStorage.getItem('cart')) || [];
+    const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+    document.getElementById('cart-count').textContent = totalItems;
+}
+updateCartCount();
+</script>
+</body>
+</html>
+

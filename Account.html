@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aurelle</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&display=swap" rel="stylesheet">
+    <link hreft="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="stylesheet.css">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="logo.png" type="image/png">
+</head>
+<body>
+    <div class="wrapper">
+        <div class="top-bar">
+            <div class="logo-area">
+               <a href="index.html">
+                <img src="logo.png" alt="Aurelle Logo" class="logo-image">
+                <span>Aurelle</span>
+                </a>
+            </div>
+            <div class="nav-links">
+                <a href="Shopping.html">Shop</a>
+                <a href="About_us.html">About us</a>
+                <a href="contact_us.html">Contact us</a>
+            </div>
+            <div class="account-cart-search">
+                <img src="search icon.png" alt="search" class="icon">
+                <a href="cart.html" class="cart-link"><img src="cart icon.png" alt="Cart" class="icon"><span id="cart-count" class="cart-count">0</span></a> 
+                <a href="Account.html"> <img src="account icon.png" alt="Account" class="icon"> </a>
+            </div>
+        </div>
+    </div>
+    <div class="Log-in-content">
+        <h1 class="log-in-title-flex">Log in</h1>
+     <!-- Main Content -->
+  <main class="container">
+    <form id="login-form" action="#" method="POST">
+
+      <input 
+        type="email" 
+        id="email" 
+        name="email"
+        placeholder="e-mail" 
+        required
+        autocomplete="email"
+      >
+        <!-- Password field with toggle visibility inside the box -->
+      <div class="password-container">
+        <input 
+          type="password" 
+          id="password" 
+          name="password"
+          placeholder="password" 
+          required
+          autocomplete="current-password"
+        >
+        <button type="button" class="password-toggle" id="password-toggle" aria-label="Show or hide password">
+          <img src="open-eye.png" alt="Show password" id="password-toggle-icon">
+        </button>
+      </div>
+
+      <button type="submit">Log in</button>
+    </form>
+
+    <div class="links">
+      <a href="Register.html">Register a new account and be part of our brand</a>
+      <a href="cart.html">Shop as a guest</a>
+    </div>
+  </main>
+
+    </div>
+    <footer>
+        <!-- footer: terms and conditions, policies, social media icons -->
+        <div class="Term-Policy">
+            <a href="Terms-and-conditions.html">Terms and Conditions</a>
+            <a href="Policies.html">Policies</a>
+        </div>
+        <div class="social-media">
+            <a href="https://www.instagram.com/aurelle.perfume/"><img src="instagram logo.png" alt="Instagram" class="icon"></a>
+            <a href="#"><img src="tiktok icon.png" alt="TikTok" class="icon"></a>
+        </div>
+    </footer>
+    <script>
+        // Function to update cart count display
+        function updateCartCount() {
+            const cart = JSON.parse(localStorage.getItem("cart")) || [];
+            let totalItems = 0;
+            
+            cart.forEach(item => {
+                totalItems += item.quantity;
+            });
+            
+            document.getElementById('cart-count').textContent = totalItems;
+        }
+
+        // Initialize cart count on page load
+        updateCartCount();
+    </script>
+</body>
+
+
+ <script>
+        (function() {
+            const toggleBtn = document.getElementById('password-toggle');
+            const passwordField = document.getElementById('password');
+            const toggleIcon = document.getElementById('password-toggle-icon');
+
+            if (toggleBtn && passwordField && toggleIcon) {
+                // Function to toggle visibility and update icon
+                const togglePassword = () => {
+                    const isPassword = passwordField.type === 'password';
+                    passwordField.type = isPassword ? 'text' : 'password';
+                    // Switch icon: open-eye (hidden) → closed-eye (visible)
+                    toggleIcon.src = isPassword ? 'closed-eye.png' : 'open-eye.png';
+                    toggleIcon.alt = isPassword ? 'Hide password' : 'Show password';
+                    // Keep focus inside the input after toggle
+                    passwordField.focus();
+                };
+
+                // Click event for the eye button
+                toggleBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    togglePassword();
+                });
+
+                // Optional: allow keyboard activation (Enter / Space)
+                toggleBtn.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter' || e.key === ' ') {
+                        e.preventDefault();
+                        togglePassword();
+                    }
+                });
+
+                // Ensure initial state is consistent
+                if (passwordField.type !== 'password') {
+                    passwordField.type = 'password';
+                    toggleIcon.src = 'open-eye.png';
+                    toggleIcon.alt = 'Show password';
+                }
+            }
+
+            // Optional: simple client-side validation (matches your style)
+            const form = document.getElementById('login-form');
+            if (form) {
+                form.addEventListener('submit', (e) => {
+                    const email = document.getElementById('email');
+                    const pwd = document.getElementById('password');
+                    if (!email.value.trim()) {
+                        e.preventDefault();
+                        alert('Please enter your e-mail address.');
+                        email.focus();
+                    } else if (!pwd.value) {
+                        e.preventDefault();
+                        alert('Please enter your password.');
+                        pwd.focus();
+                    }
+                    // You can replace this with actual AJAX or backend call later
+                });
+            }
+        })();
+    </script>
+</html>
+
