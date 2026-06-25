@@ -10,7 +10,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" href="logo.png" type="image/png">
 </head>
-<body>
+<body class="page-product2">
     <div class="wrapper">
         <div class="top-bar">
             <div class="logo-area">
@@ -67,12 +67,17 @@
                 </select>
 
             <button class="add-to-cart-button">Add to Cart</button>
+
+            
+
                 </div>
             </div>
         <div class="other products">
             <a href="Product1.html"><img src="Product1.png" alt="Product 1" class="other-product-image"><p>Everlasting Vanilla</p></a>
             <a href="Product3.html"><img src="Product3.png" alt="Product 3" class="other-product-image"><p>Product 3</p></a>
         </div>
+
+        
         </div>
     <footer>
         <!-- footer: terms and conditions, policies, social media icons -->
@@ -167,6 +172,26 @@ function updateCartCount() {
 
 // Initialize cart count on page load
 updateCartCount();
+    </script>
+    <script>
+    // Reviews script for Product2
+   function(){
+        const storageKey = 'reviews_product2';
+        const reviewsList = document.getElementById('reviewsList');
+        const form = document.getElementById('reviewForm');
+
+        function loadReviews(){
+            try{ return JSON.parse(localStorage.getItem(storageKey)) || []; }catch(e){return []}
+        }
+        function saveReviews(reviews){ localStorage.setItem(storageKey, JSON.stringify(reviews)); }
+        function render(){
+            const reviews = loadReviews();
+            if(!reviews.length){ reviewsList.innerHTML = '<p>No reviews yet. Be the first to review!</p>'; return; }
+            reviewsList.innerHTML = reviews.map(r=>`<div class="review-card"><div class="review-meta"><strong>${r.name}</strong> — ${r.rating}★ — <em>${new Date(r.date).toLocaleDateString()}</em></div><div class="review-text">${r.text}</div></div>`).join('');
+        }
+        if(form){ form.addEventListener('submit', function(e){ e.preventDefault(); const name=document.getElementById('reviewerName').value.trim(); const rating=document.getElementById('reviewRating').value; const text=document.getElementById('reviewText').value.trim(); if(!name||!text) return; const reviews=loadReviews(); reviews.unshift({name,rating,text,date:Date.now()}); saveReviews(reviews); render(); form.reset(); }); }
+        render();
+    })();
     </script>
 </body>
 </html>

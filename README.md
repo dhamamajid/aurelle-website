@@ -16,7 +16,7 @@ npm install
 
 ```env
 API_URL=/api/v1
-MONGODB_URI=mongodb+srv://<username>:<password>@cluster0.5trpfzu.mongodb.net/aurelle?retryWrites=true&w=majority
+MONGODB_URI=mongodb+srv://<username>:<password>@cluster0.5trpfzu.mongodb.net/aurelle-database?retryWrites=true&w=majority
 ```
 
 4. Start the backend:
