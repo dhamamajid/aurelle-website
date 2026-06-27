@@ -219,7 +219,7 @@ body.page-contact .nav-links a[href="contact_us.html"]::after {
     margin: 20px auto;
     padding: 70px 30px;
     border-radius: 18px;
-    background: rgba(255, 255, 255, 0.9);
+    background: rgb(255, 255, 255);
 }
 
 .order-steps-image {
