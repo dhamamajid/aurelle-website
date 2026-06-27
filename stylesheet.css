@@ -516,7 +516,7 @@ h1 {
     .top-bar {
         flex-direction: column;
         padding: 10px;
-        gap: 25px;
+        gap: 45px;
     }
 
     .logo-area {
