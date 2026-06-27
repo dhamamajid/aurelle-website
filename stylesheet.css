@@ -222,6 +222,12 @@ body.page-contact .nav-links a[href="contact_us.html"]::after {
     background: rgb(255, 255, 255);
 }
 
+body.page-cart .main-content,
+body.page-checkout .main-content,
+body.page-order-summary .main-content {
+    padding-left: 110px;
+}
+
 .order-steps-image {
     position: fixed;
     left: 20px;
@@ -322,6 +328,17 @@ h1 {
     flex-direction: column;
     gap: 15px;
     z-index: 100;
+}
+
+body.page-cart .cart-actions {
+    position: static;
+    top: auto;
+    right: auto;
+    bottom: auto;
+    z-index: auto;
+    width: 100%;
+    max-width: 700px;
+    margin: 10px auto 0;
 }
 
 .cart-action-link {
@@ -613,6 +630,22 @@ h1 {
         font-size: 10px;
         top: -8px;
         right: -8px;
+    }
+
+    body.page-cart .cart-actions {
+        position: static;
+        right: auto;
+        bottom: auto;
+        z-index: auto;
+        width: 100%;
+        max-width: 700px;
+        margin: 18px auto 0;
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .cart-action-link {
+        width: 100%;
     }
 
     footer {
@@ -926,6 +959,12 @@ h1 {
     justify-content: center;
     align-items: center;
     overflow: hidden;
+    border: 0;
+    outline: 0;
+    box-shadow: none;
+    background: transparent;
+    padding: 0;
+    margin: 0;
 }
 
 .product-image-zoom-wrapper {
@@ -936,14 +975,22 @@ h1 {
     align-items: center;
     overflow: hidden;
     cursor: zoom-in;
-    border: 3px solid #000;
+    border: 0;
+    outline: 0;
+    box-shadow: none;
+    background: transparent;
+    padding: 0;
+    margin: 0;
 }
 
 /* Product image - adjust width value below to change image size */
 .product-image img {
     width: 400px;  /* Change this value to adjust image size (e.g., 250px, 350px, 400px) */
     height: auto;
-    border: 3px solid #000;
+    border: none;
+    outline: none;
+    box-shadow: none;
+    background: transparent;
     display: block;
     transition: transform 0.3s ease;
 }
@@ -1124,7 +1171,7 @@ h1 {
 
     .product-image img {
         width: 180px;
-        border: 2px solid #000;
+        border: none;
     }
 
     .product-details h4,
@@ -1583,6 +1630,12 @@ h1 {
 
     .cart-title {
         font-size: 1.8rem;
+    }
+
+    body.page-cart .main-content,
+    body.page-checkout .main-content,
+    body.page-order-summary .main-content {
+        padding-left: 75px;
     }
 }
 
