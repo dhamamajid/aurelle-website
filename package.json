@@ -1,5 +1,8 @@
 {
   "dependencies": {
     "nodemon": "^3.1.14"
+  },
+  "scripts": {
+    "start": "nodemon Backend/app.js"
   }
 }

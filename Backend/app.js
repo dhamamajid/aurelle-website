@@ -3,19 +3,12 @@ const mongoose = require('mongoose');
 const app = express();
 const morgan = require('morgan');
 
-require('dotenv').config();
+require('dotenv').config({ path: require('path').join(__dirname, '.env') });
 
-// Import the Product model
-const Product = require('./models/product');
-
-// Import the Order model
-const Order = require('./models/order');
-
-// Import the Category model
-const Category = require('./models/catagory');
-
-// Import the User model
-const User = require('./models/user');
+const productRoutes = require('./routes/products');
+const orderRoutes = require('./routes/orders');
+const categoryRoutes = require('./routes/categories');
+const userRoutes = require('./routes/users');
 
 // middleware
 app.use(express.json());
@@ -31,40 +24,12 @@ if (mongoUri.includes('<username>') || mongoUri.includes('<password>')) {
   process.exit(1);
 }
 
-// Define all routes BEFORE connecting to MongoDB
-// http://localhost:3000/api/v1/products
-app.get(`${apiUrl}/products`, (req, res) => {
-    Product.find()
-      .then((products) => res.json(products))
-      .catch((err) => res.status(500).json({ error: err.message, success: false }));
-});
-
-app.post(`${apiUrl}/products`, (req, res) => {
-    const product = new Product({
-        name: req.body.name,
-        description: req.body.description,
-        richDescription: req.body.richDescription,
-        image: req.body.image,
-        images: req.body.images || [],
-        brand: req.body.brand,
-        price: req.body.price,
-        category: req.body.category,
-        countInStock: req.body.countInStock,
-        rating: req.body.rating,
-        isFeatured: req.body.isFeatured,
-        dateCreated: req.body.dateCreated || new Date()
-    });
-    product.save()
-        .then((createdProduct) => {
-            res.status(201).json(createdProduct);
-        })
-        .catch((err) => {
-            res.status(400).json({ 
-                error: err.message,
-                success: false
-             });
-        });
-});
+// Mount feature routes
+app.use(`${apiUrl}/products`, productRoutes);
+app.use(`${apiUrl}/orders`, orderRoutes);
+app.use(`${apiUrl}/categories`, categoryRoutes);
+app.use(`${apiUrl}/category`, categoryRoutes);
+app.use(`${apiUrl}/users`, userRoutes);
 
 app.get(`${apiUrl}/health`, (req, res) => {
   res.json({
@@ -73,105 +38,6 @@ app.get(`${apiUrl}/health`, (req, res) => {
     db: 'aurelle-database',
     collection: 'products'
   });
-});
-
-// http://localhost:3000/api/v1/orders
-app.get(`${apiUrl}/orders`, (req, res) => {
-    Order.find()
-      .populate('orderItems.product')
-      .populate('user')
-      .then((orders) => res.json(orders))
-      .catch((err) => res.status(500).json({ error: err.message, success: false }));
-});
-
-app.post(`${apiUrl}/orders`, (req, res) => {
-    const order = new Order({
-        orderItems: req.body.orderItems,
-        shippingAddress1: req.body.shippingAddress1,
-        shippingAddress2: req.body.shippingAddress2,
-        city: req.body.city,
-        zip: req.body.zip,
-        country: req.body.country,
-        phone: req.body.phone,
-        status: req.body.status || 'Pending',
-        totalPrice: req.body.totalPrice,
-        user: req.body.user,
-        dateOrdered: req.body.dateOrdered || new Date()
-    });
-    order.save()
-        .then((createdOrder) => {
-            res.status(201).json(createdOrder);
-        })
-        .catch((err) => {
-            res.status(400).json({ 
-                error: err.message,
-                success: false
-             });
-        });
-});
-
-// http://localhost:3000/api/v1/categories
-app.get(`${apiUrl}/categories`, (req, res) => {
-    Category.find().sort({ displayOrder: 1 })
-      .then((categories) => res.json(categories))
-      .catch((err) => res.status(500).json({ error: err.message, success: false }));
-});
-
-app.post(`${apiUrl}/categories`, (req, res) => {
-    const category = new Category({
-        name: req.body.name,
-        color: req.body.color,
-        icon: req.body.icon,
-        image: req.body.image,
-        description: req.body.description,
-        isFeatured: req.body.isFeatured || false,
-        displayOrder: req.body.displayOrder || 0,
-        isActive: req.body.isActive !== false,
-        dateCreated: req.body.dateCreated || new Date()
-    });
-    category.save()
-        .then((createdCategory) => {
-            res.status(201).json(createdCategory);
-        })
-        .catch((err) => {
-            res.status(400).json({ 
-                error: err.message,
-                success: false
-             });
-        });
-});
-
-// http://localhost:3000/api/v1/users
-app.get(`${apiUrl}/users`, (req, res) => {
-    User.find().select('-passwordHash')
-      .then((users) => res.json(users))
-      .catch((err) => res.status(500).json({ error: err.message, success: false }));
-});
-
-app.post(`${apiUrl}/users`, (req, res) => {
-    const user = new User({
-        name: req.body.name,
-        email: req.body.email,
-        passwordHash: req.body.passwordHash,
-        street: req.body.street,
-        city: req.body.city,
-        zip: req.body.zip,
-        country: req.body.country,
-        phone: req.body.phone,
-        isAdmin: req.body.isAdmin || false,
-        isActive: req.body.isActive !== false,
-        dateCreated: req.body.dateCreated || new Date()
-    });
-    user.save()
-        .then((createdUser) => {
-            res.status(201).json(createdUser);
-        })
-        .catch((err) => {
-            res.status(400).json({ 
-                error: err.message,
-                success: false
-             });
-        });
 });
 
 // Return a friendly response if JSON is invalid
