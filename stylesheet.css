@@ -388,7 +388,7 @@ h1 {
         flex-direction: column;
         align-items: center;
         padding: 15px;
-        gap: 20px;
+        gap: 25px;
     }
 
     .logo-area {
@@ -406,8 +406,17 @@ h1 {
     }
 
     .nav-links {
+        width: 100%;
         gap: 15px;
         font-size: 1.5rem;
+        justify-content: center;
+        flex-wrap: wrap;
+    }
+
+    .account-cart-search {
+        width: 100%;
+        justify-content: center;
+        margin-top: 10px;
     }
 
     h1 {
@@ -519,7 +528,7 @@ h1 {
     .top-bar {
         flex-direction: column;
         padding: 10px;
-        gap: 45px;
+        gap: 10px;
     }
 
     .logo-area {
@@ -537,8 +546,17 @@ h1 {
     }
 
     .nav-links {
+        width: 100%;
+        flex-wrap: wrap;
+        justify-content: center;
         gap: 10px;
         font-size: 1rem;
+    }
+
+    .account-cart-search {
+        width: 100%;
+        justify-content: center;
+        margin-top: 20px;
     }
 
     h1 {
