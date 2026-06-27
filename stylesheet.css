@@ -611,19 +611,11 @@ h1 {
     }
 
     footer {
-        position: fixed;
-        left: 0;
-        right: 0;
-        bottom: 0;
+        position: static;
         width: 100%;
         padding: 10px 15px;
-        background: #fff;
-        z-index: 10;
-        box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.05);
-    }
-
-    body {
-        padding-bottom: 120px;
+        background: transparent;
+        box-shadow: none;
     }
 
     .main-image {
