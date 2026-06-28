@@ -23,6 +23,7 @@
                 <a href="Shopping.html">Shop</a>
                 <a href="About_us.html">About us</a>
                 <a href="contact_us.html">Contact us</a>
+                <a href="admin.html">Admin</a>
             </div>
             <div class="account-cart-search">
                 <img src="search icon.png" alt="search" class="icon">
@@ -97,6 +98,32 @@
         </div>
     </footer>
     <script>
+        const STORAGE_KEYS = {
+            products: 'aurelleProducts'
+        };
+
+        function loadManagedProduct1() {
+            const products = JSON.parse(localStorage.getItem(STORAGE_KEYS.products) || '[]');
+            const managed = products.find((p) => p.id === 'product1');
+            if (!managed) return null;
+
+            const titleEl = document.querySelector('.product-title');
+            const detailsParagraphs = document.querySelectorAll('.product-details p');
+            const descriptionParagraph = document.querySelector('.product-description p');
+            const imageEl = document.getElementById('productImage');
+
+            if (titleEl) titleEl.textContent = managed.name || titleEl.textContent;
+            if (imageEl && managed.image) imageEl.src = managed.image;
+            if (detailsParagraphs[0] && managed.notes && managed.notes.top) detailsParagraphs[0].textContent = managed.notes.top;
+            if (detailsParagraphs[1] && managed.notes && managed.notes.heart) detailsParagraphs[1].textContent = managed.notes.heart;
+            if (detailsParagraphs[2] && managed.notes && managed.notes.base) detailsParagraphs[2].textContent = managed.notes.base;
+            if (descriptionParagraph && managed.notes && managed.notes.description) descriptionParagraph.textContent = managed.notes.description;
+
+            return managed;
+        }
+
+        const managedProduct = loadManagedProduct1();
+
         // Zoom functionality
         const zoomWrapper = document.getElementById('zoomWrapper');
         const productImage = document.getElementById('productImage');
@@ -125,9 +152,9 @@
         
         // Price mapping for volumes
         const volumePrices = {
-            '30': '$30.00',
-            '50': '$50.00',
-            '100': '$100.00'
+            '30': '$' + Number(managedProduct && managedProduct.prices && managedProduct.prices['30'] || 30).toFixed(2),
+            '50': '$' + Number(managedProduct && managedProduct.prices && managedProduct.prices['50'] || 50).toFixed(2),
+            '100': '$' + Number(managedProduct && managedProduct.prices && managedProduct.prices['100'] || 100).toFixed(2)
         };
         
         // Update price when volume changes
@@ -135,12 +162,13 @@
             const selectedVolume = this.value;
             productPrice.textContent = volumePrices[selectedVolume];
         });
+            productPrice.textContent = volumePrices[volumeSelect.value];
 // Add to cart functionality
 document.querySelector('.add-to-cart-button').addEventListener('click', function() {
 
     const product = {
         id: "product1", // important for identifying same product
-        name: "Everlasting Vanilla",
+            name: managedProduct && managedProduct.name ? managedProduct.name : "Everlasting Vanilla",
         price: parseFloat(document.getElementById('productPrice').textContent.replace('$','')),
         volume: document.getElementById('volume').value + " mL",
         image: document.getElementById('productImage').src,
@@ -180,6 +208,7 @@ function updateCartCount() {
 updateCartCount();
     </script>
     
+    <script src="auth-nav.js"></script>
 </body>
 </html>
 

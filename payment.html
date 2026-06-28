@@ -21,6 +21,7 @@
                 <a href="Shopping.html">Shop</a>
                 <a href="About_us.html">About us</a>
                 <a href="contact_us.html">Contact us</a>
+                <a href="admin.html">Admin</a>
             </div>
             <div class="account-cart-search">
                 <img src="search icon.png" alt="search" class="icon">
@@ -96,6 +97,10 @@
         paypalClientId: 'REPLACE_WITH_PAYPAL_CLIENT_ID',
         stripeCheckoutUrl: 'REPLACE_WITH_STRIPE_CHECKOUT_URL'
     };
+    const API_BASE = 'http://localhost:3000/api/v1';
+    const STORAGE_KEYS = {
+        orders: 'aurelleOrders'
+    };
 
     function updateCartCount() {
         const cart = JSON.parse(localStorage.getItem('cart')) || [];
@@ -117,10 +122,61 @@
         subtotalEl.textContent = 'Subtotal: €' + subtotalAmount.toFixed(2);
     }
 
-    function finalizeOrder(message) {
+    async function syncOrderToBackend(order) {
+        const payload = {
+            orderItems: (order.items || []).map((item) => ({
+                productName: item.name,
+                productImage: item.image,
+                productVolume: item.volume,
+                quantity: Number(item.quantity || 1),
+                price: Number(item.price || 0)
+            })),
+            shippingAddress1: order.customer.address,
+            shippingAddress2: '',
+            city: order.customer.city,
+            zip: order.customer.postal,
+            country: order.customer.country,
+            phone: order.customer.phone,
+            customerName: (order.customer.firstName + ' ' + order.customer.lastName).trim(),
+            customerEmail: order.customer.email,
+            customerNote: order.customer.notes,
+            status: order.status || 'Pending',
+            totalPrice: Number(order.finalTotal || 0),
+            couponCode: order.coupon && order.coupon.code ? order.coupon.code : '',
+            couponDiscount: Number(order.discountAmount || 0),
+            paymentMethod: order.paymentMethod || '',
+            customerUpdateMessage: order.customerUpdateMessage || ''
+        };
+
+        try {
+            await fetch(API_BASE + '/orders', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            });
+        } catch (err) {
+            // Keep frontend order saved even if backend is offline.
+        }
+    }
+
+    async function finalizeOrder(message, method) {
+        const pendingOrderId = sessionStorage.getItem('pendingOrderId');
+        const orders = JSON.parse(localStorage.getItem(STORAGE_KEYS.orders) || '[]');
+        const orderIndex = orders.findIndex((o) => o.id === pendingOrderId);
+
+        if (orderIndex >= 0) {
+            orders[orderIndex].paymentMethod = method || '';
+            orders[orderIndex].status = 'Processing';
+            localStorage.setItem(STORAGE_KEYS.orders, JSON.stringify(orders));
+            await syncOrderToBackend(orders[orderIndex]);
+        }
+
         localStorage.removeItem('cart');
+        localStorage.removeItem('cartTotals');
+        localStorage.removeItem('appliedCoupon');
         sessionStorage.removeItem('deliveryInfo');
         sessionStorage.removeItem('paymentSubtotal');
+        sessionStorage.removeItem('pendingOrderId');
         alert(message);
         window.location.href = 'index.html';
     }
@@ -164,7 +220,7 @@
         }
 
         sessionStorage.setItem('bankTransferReference', bankReference);
-        finalizeOrder('Bank transfer marked as pending. We will confirm your order after receiving the payment.');
+        finalizeOrder('Bank transfer marked as pending. We will confirm your order after receiving the payment.', 'bank');
     });
 
     function loadPayPalButtons() {
@@ -203,7 +259,7 @@
                 },
                 onApprove: function(data, actions) {
                     return actions.order.capture().then(function() {
-                        finalizeOrder('PayPal payment successful. Thank you for your order.');
+                        finalizeOrder('PayPal payment successful. Thank you for your order.', 'paypal');
                     });
                 },
                 onError: function() {
@@ -221,5 +277,6 @@
 
     loadPayPalButtons();
 </script>
+    <script src="auth-nav.js"></script>
 </body>
 </html>

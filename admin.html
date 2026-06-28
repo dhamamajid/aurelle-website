@@ -1,0 +1,935 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aurelle - Admin</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="stylesheet.css">
+    <link rel="icon" href="logo.png" type="image/png">
+</head>
+<body class="page-admin">
+    <div class="wrapper">
+        <div class="top-bar">
+            <div class="logo-area">
+                <a href="index.html">
+                    <img src="logo.png" alt="Aurelle Logo" class="logo-image">
+                    <span>Aurelle</span>
+                </a>
+            </div>
+            <div class="nav-links">
+                <a href="Shopping.html">Shop</a>
+                <a href="About_us.html">About us</a>
+                <a href="contact_us.html">Contact us</a>
+                <a href="admin.html">Admin</a>
+            </div>
+            <div class="account-cart-search">
+                <img src="search icon.png" alt="search" class="icon">
+                <a href="cart.html" class="cart-link"><img src="cart icon.png" alt="Cart" class="icon"><span class="cart-count" id="cart-count">0</span></a>
+                <a href="Account.html"><img src="account icon.png" alt="Account" class="icon"></a>
+            </div>
+        </div>
+
+        <div id="admin-auth-wrap" class="admin-auth-wrap">
+            <section class="admin-card admin-auth-card">
+                <h3 id="admin-auth-title">Admin Access</h3>
+                <p id="admin-auth-subtitle" class="admin-subtitle">Only the owner can open this page.</p>
+                <form id="admin-auth-form" class="admin-form">
+                    <label for="admin-auth-email">Owner Email</label>
+                    <input id="admin-auth-email" type="email" required placeholder="you@example.com" autocomplete="email">
+
+                    <label for="admin-auth-password">Password</label>
+                    <input id="admin-auth-password" type="password" required placeholder="Enter admin password" autocomplete="current-password">
+
+                    <div class="admin-tools-row">
+                        <button id="admin-auth-submit" type="submit" class="product-button">Unlock Admin</button>
+                    </div>
+                </form>
+                <p id="admin-auth-message" class="cart-item-meta"></p>
+            </section>
+        </div>
+
+        <div class="admin-shell" id="admin-shell" style="display:none;">
+            <h2 class="admin-title">Admin Dashboard</h2>
+            <p class="admin-subtitle">Manage orders, customers, products, images, and coupons from one place.</p>
+            <div class="admin-tools-row" style="justify-content:flex-end;">
+                <button id="admin-logout-btn" class="product-button" type="button">Logout</button>
+            </div>
+
+            <section class="admin-card">
+                <h3>Orders & Customer Shipping Info</h3>
+                <div class="admin-tools-row">
+                    <button class="product-button" id="refresh-orders">Refresh Orders</button>
+                </div>
+                <div id="order-stats" class="admin-customer-stats"></div>
+                <div id="orders-list" class="admin-list"></div>
+            </section>
+
+            <section class="admin-card">
+                <h3>Customers</h3>
+                <div class="admin-tools-row">
+                    <button class="product-button" id="refresh-customers">Refresh Customers</button>
+                </div>
+                <div id="customer-stats" class="admin-customer-stats"></div>
+                <div id="customers-list" class="admin-list"></div>
+            </section>
+
+            <section class="admin-card">
+                <h3>Products</h3>
+                <form id="product-form" class="admin-form">
+                    <input type="hidden" id="product-id">
+                    <label for="product-name">Name</label>
+                    <input id="product-name" type="text" required placeholder="Everlasting Vanilla">
+
+                    <label for="product-image">Main image URL or file name</label>
+                    <input id="product-image" type="text" required placeholder="Product1.png">
+
+                    <label for="product-page-link">Page link (optional)</label>
+                    <input id="product-page-link" type="text" placeholder="Product1.html">
+
+                    <label for="product-price-30">Price 30ml</label>
+                    <input id="product-price-30" type="number" min="0" step="0.01" required>
+
+                    <label for="product-price-50">Price 50ml</label>
+                    <input id="product-price-50" type="number" min="0" step="0.01" required>
+
+                    <label for="product-price-100">Price 100ml</label>
+                    <input id="product-price-100" type="number" min="0" step="0.01" required>
+
+                    <label for="product-top-notes">Top notes</label>
+                    <input id="product-top-notes" type="text" placeholder="Bergamot, Orange flower">
+
+                    <label for="product-heart-notes">Heart notes</label>
+                    <input id="product-heart-notes" type="text" placeholder="Rose, Oakwood">
+
+                    <label for="product-base-notes">Base notes</label>
+                    <input id="product-base-notes" type="text" placeholder="Vanilla, Amber">
+
+                    <label for="product-description">Description</label>
+                    <textarea id="product-description" rows="4" placeholder="Write product story and details"></textarea>
+
+                    <label class="admin-inline-check" for="product-visible">
+                        <input id="product-visible" type="checkbox" checked>
+                        Visible in shop
+                    </label>
+
+                    <div class="admin-tools-row">
+                        <button type="submit" class="product-button">Save Product</button>
+                        <button type="button" id="reset-product" class="product-button">Clear</button>
+                    </div>
+                </form>
+                <div id="products-list" class="admin-list"></div>
+            </section>
+
+            <section class="admin-card">
+                <h3>Coupons</h3>
+                <form id="coupon-form" class="admin-form">
+                    <input type="hidden" id="coupon-id">
+                    <label for="coupon-code">Coupon code</label>
+                    <input id="coupon-code" type="text" required placeholder="SUMMER15">
+
+                    <label for="coupon-type">Discount type</label>
+                    <select id="coupon-type">
+                        <option value="percent">Percent</option>
+                        <option value="fixed">Fixed amount</option>
+                    </select>
+
+                    <label for="coupon-value">Discount value</label>
+                    <input id="coupon-value" type="number" min="0" step="0.01" required placeholder="15">
+
+                    <label for="coupon-expiry">Expires at (optional)</label>
+                    <input id="coupon-expiry" type="date">
+
+                    <label for="coupon-note">Note</label>
+                    <input id="coupon-note" type="text" placeholder="Special occasion">
+
+                    <label class="admin-inline-check" for="coupon-active">
+                        <input id="coupon-active" type="checkbox" checked>
+                        Active
+                    </label>
+
+                    <div class="admin-tools-row">
+                        <button type="submit" class="product-button">Save Coupon</button>
+                        <button type="button" id="reset-coupon" class="product-button">Clear</button>
+                    </div>
+                </form>
+                <div id="coupons-list" class="admin-list"></div>
+            </section>
+        </div>
+    </div>
+
+    <footer>
+        <div class="Term-Policy">
+            <a href="Terms-and-conditions.html">Terms and Conditions</a>
+            <a href="Policies.html">Policies</a>
+        </div>
+        <div class="social-media">
+            <a href="https://www.instagram.com/aurelle.perfume/"><img src="instagram logo.png" alt="Instagram" class="icon"></a>
+            <a href="#"><img src="tiktok icon.png" alt="TikTok" class="icon"></a>
+        </div>
+    </footer>
+
+<script>
+    const API_BASE = 'http://localhost:3000/api/v1';
+    const STORAGE_KEYS = {
+        products: 'aurelleProducts',
+        orders: 'aurelleOrders',
+        coupons: 'aurelleCoupons'
+    };
+    const ADMIN_KEYS = {
+        owner: 'aurelleAdminOwner',
+        session: 'aurelleAdminSession'
+    };
+    const ADMIN_EMAIL_DOMAIN = '@aurelleperfume.com';
+    const ADMIN_SESSION_MS = 2 * 60 * 60 * 1000;
+
+    function isCompanyAdminEmail(email) {
+        return String(email || '').trim().toLowerCase().endsWith(ADMIN_EMAIL_DOMAIN);
+    }
+
+    async function sha256(input) {
+        const encoder = new TextEncoder();
+        const data = encoder.encode(input);
+        const digest = await crypto.subtle.digest('SHA-256', data);
+        return Array.from(new Uint8Array(digest)).map((b) => b.toString(16).padStart(2, '0')).join('');
+    }
+
+    function getOwnerConfig() {
+        try {
+            return JSON.parse(localStorage.getItem(ADMIN_KEYS.owner) || 'null');
+        } catch (err) {
+            return null;
+        }
+    }
+
+    function setOwnerConfig(value) {
+        localStorage.setItem(ADMIN_KEYS.owner, JSON.stringify(value));
+    }
+
+    function setAdminSession(email) {
+        const session = {
+            email,
+            expiresAt: Date.now() + ADMIN_SESSION_MS
+        };
+        sessionStorage.setItem(ADMIN_KEYS.session, JSON.stringify(session));
+    }
+
+    function clearAdminSession() {
+        sessionStorage.removeItem(ADMIN_KEYS.session);
+    }
+
+    function isAdminSessionValid() {
+        try {
+            const owner = getOwnerConfig();
+            const session = JSON.parse(sessionStorage.getItem(ADMIN_KEYS.session) || 'null');
+            if (!owner || !session) return false;
+            if (!isCompanyAdminEmail(owner.email) || !isCompanyAdminEmail(session.email)) return false;
+            return session.email === owner.email && Number(session.expiresAt || 0) > Date.now();
+        } catch (err) {
+            return false;
+        }
+    }
+
+    function showAdminShell() {
+        document.getElementById('admin-auth-wrap').style.display = 'none';
+        document.getElementById('admin-shell').style.display = 'flex';
+    }
+
+    function showAdminAuth() {
+        document.getElementById('admin-auth-wrap').style.display = 'block';
+        document.getElementById('admin-shell').style.display = 'none';
+    }
+
+    function configureAuthUi() {
+        const owner = getOwnerConfig();
+        const title = document.getElementById('admin-auth-title');
+        const subtitle = document.getElementById('admin-auth-subtitle');
+        const submit = document.getElementById('admin-auth-submit');
+        const emailInput = document.getElementById('admin-auth-email');
+
+        if (owner && owner.email) {
+            title.textContent = 'Admin Login';
+            subtitle.textContent = 'Use your @aurelleperfume.com owner credentials to open the dashboard.';
+            submit.textContent = 'Unlock Admin';
+            emailInput.value = owner.email;
+        } else {
+            title.textContent = 'Setup Owner Access';
+            subtitle.textContent = 'First visit: create your private @aurelleperfume.com admin owner account on this browser.';
+            submit.textContent = 'Create Owner Access';
+        }
+    }
+
+    async function handleAdminAuthSubmit(e) {
+        e.preventDefault();
+        const message = document.getElementById('admin-auth-message');
+        const emailInput = document.getElementById('admin-auth-email');
+        const passwordInput = document.getElementById('admin-auth-password');
+        const email = emailInput.value.trim().toLowerCase();
+        const password = passwordInput.value;
+
+        if (!email || !password || password.length < 8) {
+            message.textContent = 'Use a valid email and a password with at least 8 characters.';
+            return;
+        }
+
+        if (!isCompanyAdminEmail(email)) {
+            message.textContent = 'Only @aurelleperfume.com emails can access admin.';
+            return;
+        }
+
+        const owner = getOwnerConfig();
+        const passwordHash = await sha256(password);
+
+        if (!owner) {
+            setOwnerConfig({ email, passwordHash, createdAt: new Date().toISOString() });
+            setAdminSession(email);
+            passwordInput.value = '';
+            message.textContent = '';
+            showAdminShell();
+            initializeAdminDashboard();
+            return;
+        }
+
+        if (owner.email !== email || owner.passwordHash !== passwordHash) {
+            message.textContent = 'Invalid owner credentials.';
+            return;
+        }
+
+        setAdminSession(email);
+        passwordInput.value = '';
+        message.textContent = '';
+        showAdminShell();
+        initializeAdminDashboard();
+    }
+
+    function updateCartCount() {
+        const cart = JSON.parse(localStorage.getItem('cart')) || [];
+        const totalItems = cart.reduce((sum, item) => sum + (item.quantity || 0), 0);
+        document.getElementById('cart-count').textContent = totalItems;
+    }
+
+    function seedDefaults() {
+        const seeded = [
+            {
+                id: 'product1',
+                name: 'Everlasting Vanilla',
+                image: 'Product1.png',
+                pageLink: 'Product1.html',
+                visible: true,
+                prices: { '30': 30, '50': 50, '100': 100 },
+                notes: {
+                    top: 'Bergamot, Orange flower',
+                    heart: 'Aurantiol, Rose, Oakwood, Geranium',
+                    base: 'Vanilla, Amber, Sandalwood, Coconut',
+                    description: 'A soft, luminous fragrance with warm vanilla, amber, and sandalwood depth.'
+                }
+            },
+            {
+                id: 'product2',
+                name: 'Product 2',
+                image: 'Product2.png',
+                pageLink: 'Product2.html',
+                visible: true,
+                prices: { '30': 30, '50': 50, '100': 100 },
+                notes: { top: '...', heart: '...', base: '...', description: 'Product description.' }
+            },
+            {
+                id: 'product3',
+                name: 'Product 3',
+                image: 'Product3.png',
+                pageLink: 'Product3.html',
+                visible: true,
+                prices: { '30': 30, '50': 50, '100': 100 },
+                notes: { top: '...', heart: '...', base: '...', description: 'Product description.' }
+            }
+        ];
+
+        const current = JSON.parse(localStorage.getItem(STORAGE_KEYS.products) || '[]');
+
+        if (!current.length) {
+            localStorage.setItem(STORAGE_KEYS.products, JSON.stringify(seeded));
+            return;
+        }
+
+        const existingIds = new Set(current.map((item) => item.id));
+        const missingDefaults = seeded.filter((item) => !existingIds.has(item.id));
+
+        if (missingDefaults.length) {
+            localStorage.setItem(STORAGE_KEYS.products, JSON.stringify([...current, ...missingDefaults]));
+        }
+    }
+
+    function readJson(key) {
+        try { return JSON.parse(localStorage.getItem(key) || '[]'); } catch (e) { return []; }
+    }
+
+    function writeJson(key, value) {
+        localStorage.setItem(key, JSON.stringify(value));
+    }
+
+    function formatMoney(value) {
+        return '€' + Number(value || 0).toFixed(2);
+    }
+
+    function formatDate(value) {
+        if (!value) return 'Unknown';
+        const date = new Date(value);
+        if (Number.isNaN(date.getTime())) return 'Unknown';
+        return date.toLocaleDateString();
+    }
+
+    function normalizeEmail(value) {
+        return String(value || '').trim().toLowerCase();
+    }
+
+    async function tryApi(method, path, body) {
+        try {
+            const res = await fetch(API_BASE + path, {
+                method,
+                headers: { 'Content-Type': 'application/json' },
+                body: body ? JSON.stringify(body) : undefined
+            });
+            if (!res.ok) return null;
+            return await res.json();
+        } catch (err) {
+            return null;
+        }
+    }
+
+    function renderProducts() {
+        const list = document.getElementById('products-list');
+        const products = readJson(STORAGE_KEYS.products);
+
+        if (!products.length) {
+            list.innerHTML = '<p class="cart-empty-msg">No products yet.</p>';
+            return;
+        }
+
+        list.innerHTML = products.map((p) => `
+            <div class="admin-item">
+                <div>
+                    <strong>${p.name}</strong><br>
+                    <span>${p.id} | ${p.image} | ${p.visible ? 'Visible' : 'Hidden'}</span><br>
+                    <span>30ml ${formatMoney(p.prices && p.prices['30'])} | 50ml ${formatMoney(p.prices && p.prices['50'])} | 100ml ${formatMoney(p.prices && p.prices['100'])}</span>
+                </div>
+                <div class="admin-item-actions">
+                    <button class="product-button" onclick="editProduct('${p.id}')">Edit</button>
+                    <button class="product-button" onclick="removeProduct('${p.id}')">Delete</button>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    function editProduct(id) {
+        const products = readJson(STORAGE_KEYS.products);
+        const product = products.find((p) => p.id === id);
+        if (!product) return;
+
+        document.getElementById('product-id').value = product.id;
+        document.getElementById('product-name').value = product.name || '';
+        document.getElementById('product-image').value = product.image || '';
+        document.getElementById('product-page-link').value = product.pageLink || '';
+        document.getElementById('product-price-30').value = Number(product.prices && product.prices['30'] || 0);
+        document.getElementById('product-price-50').value = Number(product.prices && product.prices['50'] || 0);
+        document.getElementById('product-price-100').value = Number(product.prices && product.prices['100'] || 0);
+        document.getElementById('product-top-notes').value = product.notes && product.notes.top || '';
+        document.getElementById('product-heart-notes').value = product.notes && product.notes.heart || '';
+        document.getElementById('product-base-notes').value = product.notes && product.notes.base || '';
+        document.getElementById('product-description').value = product.notes && product.notes.description || '';
+        document.getElementById('product-visible').checked = product.visible !== false;
+    }
+
+    async function removeProduct(id) {
+        if (!confirm('Delete this product?')) return;
+        const products = readJson(STORAGE_KEYS.products).filter((p) => p.id !== id);
+        writeJson(STORAGE_KEYS.products, products);
+        renderProducts();
+        await tryApi('DELETE', '/products/' + id);
+    }
+
+    function resetProductForm() {
+        document.getElementById('product-form').reset();
+        document.getElementById('product-id').value = '';
+        document.getElementById('product-visible').checked = true;
+    }
+
+    async function handleProductSubmit(e) {
+        e.preventDefault();
+        const existingId = document.getElementById('product-id').value.trim();
+        const id = existingId || ('p' + Date.now());
+
+        const product = {
+            id,
+            name: document.getElementById('product-name').value.trim(),
+            image: document.getElementById('product-image').value.trim(),
+            pageLink: document.getElementById('product-page-link').value.trim(),
+            visible: document.getElementById('product-visible').checked,
+            prices: {
+                '30': Number(document.getElementById('product-price-30').value || 0),
+                '50': Number(document.getElementById('product-price-50').value || 0),
+                '100': Number(document.getElementById('product-price-100').value || 0)
+            },
+            notes: {
+                top: document.getElementById('product-top-notes').value.trim(),
+                heart: document.getElementById('product-heart-notes').value.trim(),
+                base: document.getElementById('product-base-notes').value.trim(),
+                description: document.getElementById('product-description').value.trim()
+            }
+        };
+
+        const products = readJson(STORAGE_KEYS.products);
+        const idx = products.findIndex((p) => p.id === id);
+        if (idx >= 0) {
+            products[idx] = product;
+        } else {
+            products.push(product);
+        }
+
+        writeJson(STORAGE_KEYS.products, products);
+        renderProducts();
+        resetProductForm();
+
+        await tryApi('POST', '/products', {
+            name: product.name,
+            description: product.notes.description,
+            richDescription: `${product.notes.top}\n${product.notes.heart}\n${product.notes.base}`,
+            image: product.image,
+            images: [product.image],
+            price: product.prices['30'],
+            countInStock: 10,
+            rating: 0,
+            isFeatured: true,
+            category: null
+        });
+    }
+
+    function renderCoupons() {
+        const list = document.getElementById('coupons-list');
+        const coupons = readJson(STORAGE_KEYS.coupons);
+
+        if (!coupons.length) {
+            list.innerHTML = '<p class="cart-empty-msg">No coupons yet.</p>';
+            return;
+        }
+
+        list.innerHTML = coupons.map((c) => `
+            <div class="admin-item">
+                <div>
+                    <strong>${c.code}</strong><br>
+                    <span>${c.discountType === 'percent' ? c.discountValue + '%' : '€' + c.discountValue} | ${c.active ? 'Active' : 'Inactive'} | Expires: ${c.expiresAt || 'No expiry'}</span><br>
+                    <span>${c.note || ''}</span>
+                </div>
+                <div class="admin-item-actions">
+                    <button class="product-button" onclick="editCoupon('${c.id}')">Edit</button>
+                    <button class="product-button" onclick="removeCoupon('${c.id}')">Delete</button>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    function editCoupon(id) {
+        const coupons = readJson(STORAGE_KEYS.coupons);
+        const coupon = coupons.find((c) => c.id === id);
+        if (!coupon) return;
+
+        document.getElementById('coupon-id').value = coupon.id;
+        document.getElementById('coupon-code').value = coupon.code || '';
+        document.getElementById('coupon-type').value = coupon.discountType || 'percent';
+        document.getElementById('coupon-value').value = Number(coupon.discountValue || 0);
+        document.getElementById('coupon-expiry').value = coupon.expiresAt || '';
+        document.getElementById('coupon-note').value = coupon.note || '';
+        document.getElementById('coupon-active').checked = coupon.active !== false;
+    }
+
+    async function removeCoupon(id) {
+        if (!confirm('Delete this coupon?')) return;
+        const coupons = readJson(STORAGE_KEYS.coupons).filter((c) => c.id !== id);
+        writeJson(STORAGE_KEYS.coupons, coupons);
+        renderCoupons();
+        await tryApi('DELETE', '/coupons/' + id);
+    }
+
+    function resetCouponForm() {
+        document.getElementById('coupon-form').reset();
+        document.getElementById('coupon-id').value = '';
+        document.getElementById('coupon-active').checked = true;
+    }
+
+    async function handleCouponSubmit(e) {
+        e.preventDefault();
+        const existingId = document.getElementById('coupon-id').value.trim();
+        const coupon = {
+            id: existingId || ('c' + Date.now()),
+            code: document.getElementById('coupon-code').value.trim().toUpperCase(),
+            discountType: document.getElementById('coupon-type').value,
+            discountValue: Number(document.getElementById('coupon-value').value || 0),
+            expiresAt: document.getElementById('coupon-expiry').value,
+            note: document.getElementById('coupon-note').value.trim(),
+            active: document.getElementById('coupon-active').checked
+        };
+
+        const coupons = readJson(STORAGE_KEYS.coupons);
+        const idx = coupons.findIndex((c) => c.id === coupon.id || c.code === coupon.code);
+        if (idx >= 0) {
+            coupons[idx] = coupon;
+        } else {
+            coupons.push(coupon);
+        }
+
+        writeJson(STORAGE_KEYS.coupons, coupons);
+        renderCoupons();
+        resetCouponForm();
+
+        await tryApi('POST', '/coupons', {
+            code: coupon.code,
+            discountType: coupon.discountType,
+            discountValue: coupon.discountValue,
+            expiresAt: coupon.expiresAt || null,
+            isActive: coupon.active,
+            note: coupon.note
+        });
+    }
+
+    function renderOrders() {
+        const stats = document.getElementById('order-stats');
+        const list = document.getElementById('orders-list');
+        const orders = readJson(STORAGE_KEYS.orders).sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+        const now = new Date();
+        const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate()).getTime();
+        const sevenDaysAgo = now.getTime() - (7 * 24 * 60 * 60 * 1000);
+
+        const newToday = orders.filter((order) => {
+            const time = new Date(order.createdAt || 0).getTime();
+            return !Number.isNaN(time) && time >= startOfToday;
+        }).length;
+
+        const newThisWeek = orders.filter((order) => {
+            const time = new Date(order.createdAt || 0).getTime();
+            return !Number.isNaN(time) && time >= sevenDaysAgo;
+        }).length;
+
+        const pendingCount = orders.filter((order) => (order.status || 'Pending') === 'Pending').length;
+
+        stats.innerHTML = `
+            <div class="admin-stat-card">
+                <strong>${orders.length}</strong>
+                <span>Total orders</span>
+            </div>
+            <div class="admin-stat-card">
+                <strong>${newToday}</strong>
+                <span>New orders today</span>
+            </div>
+            <div class="admin-stat-card">
+                <strong>${newThisWeek}</strong>
+                <span>New orders (7 days)</span>
+            </div>
+            <div class="admin-stat-card">
+                <strong>${pendingCount}</strong>
+                <span>Pending orders</span>
+            </div>
+        `;
+
+        if (!orders.length) {
+            list.innerHTML = '<p class="cart-empty-msg">No orders yet.</p>';
+            return;
+        }
+
+        list.innerHTML = orders.map((o) => {
+            const items = (o.items || []).map((i) => `${i.name} (${i.volume}) x${i.quantity}`).join(', ');
+            const customer = o.customer || {};
+            const placedOn = formatDate(o.createdAt);
+            const subtotal = Number(o.subtotal || o.finalTotal || 0);
+            const discount = Number(o.discountAmount || 0);
+            const total = Number(o.finalTotal || o.subtotal || 0);
+            return `
+                <div class="admin-item admin-order-item">
+                    <div>
+                        <strong>Order ${o.id}</strong><br>
+                        <span>Status: ${o.status || 'Pending'} | Payment: ${o.paymentMethod || 'Not set'} | Placed: ${placedOn}</span><br>
+                        <span>Customer: ${customer.firstName || ''} ${customer.lastName || ''} (${customer.email || 'No email'})</span><br>
+                        <span>Phone: ${customer.phone || 'Unknown'}</span><br>
+                        <span>Delivery Address: ${customer.address || 'Unknown'}, ${customer.city || 'Unknown'}, ${customer.postal || 'Unknown'}, ${customer.country || 'Unknown'}</span><br>
+                        <span>Checkout Notes: ${customer.notes || 'None'}</span><br>
+                        <span>Items: ${items}</span><br>
+                        <span>Subtotal: ${formatMoney(subtotal)} | Discount: -${formatMoney(discount)} | Total: ${formatMoney(total)}</span><br>
+                        <span>Coupon: ${o.coupon && o.coupon.code ? o.coupon.code : 'None'}</span><br>
+                        <span>Customer update: ${o.customerUpdateMessage || 'None'}</span>
+                    </div>
+                    <div class="admin-order-actions">
+                        <select id="status-${o.id}">
+                            <option ${o.status === 'Pending' ? 'selected' : ''}>Pending</option>
+                            <option ${o.status === 'Processing' ? 'selected' : ''}>Processing</option>
+                            <option ${o.status === 'Shipped' ? 'selected' : ''}>Shipped</option>
+                            <option ${o.status === 'Delivered' ? 'selected' : ''}>Delivered</option>
+                            <option ${o.status === 'Cancelled' ? 'selected' : ''}>Cancelled</option>
+                        </select>
+                        <input id="msg-${o.id}" type="text" placeholder="Message to customer" value="${(o.customerUpdateMessage || '').replace(/"/g, '&quot;')}">
+                        <button class="product-button" onclick="updateOrder('${o.id}')">Save Order Update</button>
+                    </div>
+                </div>
+            `;
+        }).join('');
+    }
+
+    function buildCustomersFromOrders(orders) {
+        const customersByKey = new Map();
+
+        orders.forEach((order) => {
+            const customer = order.customer || {};
+            const email = normalizeEmail(customer.email);
+            const key = email || ('order-' + String(order.id || Date.now()));
+            const orderDate = new Date(order.createdAt || Date.now());
+            const orderTime = Number.isNaN(orderDate.getTime()) ? Date.now() : orderDate.getTime();
+            const total = Number(order.finalTotal || order.subtotal || 0);
+
+            if (!customersByKey.has(key)) {
+                customersByKey.set(key, {
+                    key,
+                    name: (customer.firstName || '') + ' ' + (customer.lastName || ''),
+                    email: email || 'No email',
+                    phone: customer.phone || '',
+                    city: customer.city || '',
+                    country: customer.country || '',
+                    customerSince: orderTime,
+                    lastOrderAt: orderTime,
+                    orderCount: 0,
+                    totalSpent: 0,
+                    registeredAt: null,
+                    source: 'orders'
+                });
+            }
+
+            const current = customersByKey.get(key);
+            current.name = String(current.name || '').trim() || String((customer.firstName || '') + ' ' + (customer.lastName || '')).trim() || 'Unnamed customer';
+            current.phone = current.phone || customer.phone || '';
+            current.city = current.city || customer.city || '';
+            current.country = current.country || customer.country || '';
+            current.customerSince = Math.min(current.customerSince, orderTime);
+            current.lastOrderAt = Math.max(current.lastOrderAt, orderTime);
+            current.orderCount += 1;
+            current.totalSpent += total;
+        });
+
+        return customersByKey;
+    }
+
+    async function loadBackendUsers() {
+        const users = await tryApi('GET', '/users');
+        if (!Array.isArray(users)) return [];
+        return users;
+    }
+
+    async function renderCustomers() {
+        const stats = document.getElementById('customer-stats');
+        const list = document.getElementById('customers-list');
+        const orders = readJson(STORAGE_KEYS.orders);
+        const users = await loadBackendUsers();
+        const customersByKey = buildCustomersFromOrders(orders);
+
+        users.forEach((user) => {
+            const email = normalizeEmail(user.email);
+            if (!email) return;
+            const key = email;
+            const createdAt = new Date(user.dateCreated || Date.now()).getTime();
+
+            if (!customersByKey.has(key)) {
+                customersByKey.set(key, {
+                    key,
+                    name: user.name || 'Unnamed customer',
+                    email,
+                    phone: user.phone || '',
+                    city: user.city || '',
+                    country: user.country || '',
+                    customerSince: createdAt,
+                    lastOrderAt: null,
+                    orderCount: 0,
+                    totalSpent: 0,
+                    registeredAt: createdAt,
+                    source: 'users'
+                });
+                return;
+            }
+
+            const current = customersByKey.get(key);
+            current.name = current.name || user.name || 'Unnamed customer';
+            current.phone = current.phone || user.phone || '';
+            current.city = current.city || user.city || '';
+            current.country = current.country || user.country || '';
+            current.registeredAt = createdAt;
+            current.customerSince = Math.min(current.customerSince, createdAt);
+            current.source = 'both';
+        });
+
+        const customers = Array.from(customersByKey.values()).sort((a, b) => {
+            const aTime = Number(a.customerSince || 0);
+            const bTime = Number(b.customerSince || 0);
+            return bTime - aTime;
+        });
+
+        const now = new Date();
+        const thisMonth = now.getMonth();
+        const thisYear = now.getFullYear();
+        const newThisMonth = customers.filter((item) => {
+            const date = new Date(item.customerSince || 0);
+            return date.getMonth() === thisMonth && date.getFullYear() === thisYear;
+        }).length;
+        const withOrders = customers.filter((item) => item.orderCount > 0).length;
+
+        stats.innerHTML = `
+            <div class="admin-stat-card">
+                <strong>${customers.length}</strong>
+                <span>Total customers</span>
+            </div>
+            <div class="admin-stat-card">
+                <strong>${withOrders}</strong>
+                <span>Customers with orders</span>
+            </div>
+            <div class="admin-stat-card">
+                <strong>${newThisMonth}</strong>
+                <span>New this month</span>
+            </div>
+        `;
+
+        if (!customers.length) {
+            list.innerHTML = '<p class="cart-empty-msg">No customers yet.</p>';
+            return;
+        }
+
+        list.innerHTML = customers.map((customer) => `
+            <div class="admin-item admin-customer-item">
+                <div>
+                    <strong>${customer.name || 'Unnamed customer'}</strong><br>
+                    <span>Email: ${customer.email || 'No email'}</span><br>
+                    <span>Phone: ${customer.phone || 'Unknown'} | City: ${customer.city || 'Unknown'} | Country: ${customer.country || 'Unknown'}</span><br>
+                    <span>Customer since: ${formatDate(customer.customerSince)} | Registered: ${formatDate(customer.registeredAt)}</span><br>
+                    <span>Last order: ${formatDate(customer.lastOrderAt)} | Orders: ${customer.orderCount} | Spent: ${formatMoney(customer.totalSpent)}</span>
+                </div>
+                <div class="admin-item-actions">
+                    <span>${customer.source === 'both' ? 'Registered + Ordered' : (customer.source === 'users' ? 'Registered only' : 'Order only')}</span>
+                </div>
+            </div>
+        `).join('');
+    }
+
+    async function updateOrder(id) {
+        const status = document.getElementById('status-' + id).value;
+        const msg = document.getElementById('msg-' + id).value.trim();
+        const orders = readJson(STORAGE_KEYS.orders);
+        const idx = orders.findIndex((o) => o.id === id);
+        if (idx < 0) return;
+
+        orders[idx].status = status;
+        orders[idx].customerUpdateMessage = msg;
+        writeJson(STORAGE_KEYS.orders, orders);
+        renderOrders();
+
+        await tryApi('PUT', '/orders/' + id, {
+            status,
+            customerUpdateMessage: msg,
+            paymentMethod: orders[idx].paymentMethod || ''
+        });
+    }
+
+    async function loadBackendOrders() {
+        const fromApi = await tryApi('GET', '/orders');
+        if (!Array.isArray(fromApi)) return;
+
+        const localOrders = readJson(STORAGE_KEYS.orders);
+        const localIds = new Set(localOrders.map((o) => o.id));
+
+        fromApi.forEach((apiOrder) => {
+            const id = apiOrder._id || apiOrder.id;
+            if (!id || localIds.has(id)) return;
+            localOrders.push({
+                id,
+                status: apiOrder.status || 'Pending',
+                createdAt: apiOrder.dateOrdered || new Date().toISOString(),
+                items: (apiOrder.orderItems || []).map((i) => ({
+                    name: i.productName || (i.product && i.product.name) || 'Product',
+                    volume: i.productVolume || '',
+                    quantity: i.quantity || 1,
+                    price: i.price || 0,
+                    image: i.productImage || ''
+                })),
+                customer: {
+                    firstName: apiOrder.customerName || '',
+                    lastName: '',
+                    email: apiOrder.customerEmail || '',
+                    phone: apiOrder.phone || '',
+                    address: apiOrder.shippingAddress1 || '',
+                    city: apiOrder.city || '',
+                    postal: apiOrder.zip || '',
+                    country: apiOrder.country || '',
+                    notes: apiOrder.customerNote || ''
+                },
+                subtotal: Number(apiOrder.totalPrice || 0),
+                discountAmount: Number(apiOrder.couponDiscount || 0),
+                finalTotal: Number(apiOrder.totalPrice || 0),
+                paymentMethod: apiOrder.paymentMethod || '',
+                coupon: { code: apiOrder.couponCode || '' },
+                customerUpdateMessage: apiOrder.customerUpdateMessage || ''
+            });
+        });
+
+        writeJson(STORAGE_KEYS.orders, localOrders);
+    }
+
+    let adminInitialized = false;
+
+    function initializeAdminDashboard() {
+        if (adminInitialized) return;
+        adminInitialized = true;
+
+        document.getElementById('product-form').addEventListener('submit', handleProductSubmit);
+        document.getElementById('coupon-form').addEventListener('submit', handleCouponSubmit);
+        document.getElementById('reset-product').addEventListener('click', resetProductForm);
+        document.getElementById('reset-coupon').addEventListener('click', resetCouponForm);
+        document.getElementById('refresh-orders').addEventListener('click', async function() {
+            await loadBackendOrders();
+            renderOrders();
+            await renderCustomers();
+        });
+        document.getElementById('refresh-customers').addEventListener('click', async function() {
+            await loadBackendOrders();
+            await renderCustomers();
+        });
+
+        document.getElementById('admin-logout-btn').addEventListener('click', function() {
+            clearAdminSession();
+            adminInitialized = false;
+            showAdminAuth();
+            configureAuthUi();
+            document.getElementById('admin-auth-password').value = '';
+        });
+
+        seedDefaults();
+        renderProducts();
+        renderCoupons();
+        loadBackendOrders().then(function() {
+            renderOrders();
+            renderCustomers();
+        });
+
+        window.editProduct = editProduct;
+        window.removeProduct = removeProduct;
+        window.editCoupon = editCoupon;
+        window.removeCoupon = removeCoupon;
+        window.updateOrder = updateOrder;
+    }
+
+    updateCartCount();
+    configureAuthUi();
+    document.getElementById('admin-auth-form').addEventListener('submit', handleAdminAuthSubmit);
+
+    if (isAdminSessionValid()) {
+        showAdminShell();
+        initializeAdminDashboard();
+    } else {
+        showAdminAuth();
+    }
+</script>
+    <script src="auth-nav.js"></script>
+</body>
+</html>

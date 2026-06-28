@@ -23,6 +23,7 @@
                 <a href="Shopping.html">Shop</a>
                 <a href="About_us.html">About us</a>
                 <a href="contact_us.html">Contact us</a>
+                <a href="admin.html">Admin</a>
             </div>
             <div class="account-cart-search">
                 <img src="search icon.png" alt="search" class="icon">
@@ -35,6 +36,15 @@
             <h2 class="cart-title">Shopping Cart</h2>
             <div id="cart-container"></div>
             <h3 id="subtotal"></h3>
+            <div class="checkout-field" style="width:100%; max-width:700px; margin-top: 14px;">
+                <label for="coupon-code">Coupon Code</label>
+                <div class="admin-tools-row" style="justify-content:flex-start;">
+                    <input type="text" id="coupon-code" placeholder="Enter coupon code" style="max-width: 260px;">
+                    <button id="apply-coupon-btn" class="product-button" type="button">Apply Coupon</button>
+                </div>
+                <p id="coupon-message" class="cart-item-meta"></p>
+                <p id="discount-row" class="cart-item-meta"></p>
+            </div>
             <div class="cart-actions">
                 <a href="Check_out_info.html" class="product-button cart-action-link">Checkout</a>
                 <a href="Shopping.html" class="product-button cart-action-link">Back to Shop</a>
@@ -68,10 +78,15 @@
         </div>
     </footer>
 <script>
+const STORAGE_KEYS = {
+    coupons: 'aurelleCoupons'
+};
+
 function loadCart() {
     const cart = JSON.parse(localStorage.getItem("cart")) || [];
     const container = document.getElementById("cart-container");
     const subtotalEl = document.getElementById("subtotal");
+    const discountRow = document.getElementById("discount-row");
 
     container.innerHTML = "";
     let subtotal = 0;
@@ -106,7 +121,30 @@ function loadCart() {
         container.appendChild(div);
     });
 
-    subtotalEl.textContent = "Subtotal: €" + subtotal.toFixed(2);
+    const appliedCoupon = JSON.parse(localStorage.getItem('appliedCoupon') || 'null');
+    let discountAmount = 0;
+
+    if (appliedCoupon && appliedCoupon.active !== false) {
+        if (appliedCoupon.discountType === 'percent') {
+            discountAmount = subtotal * (Number(appliedCoupon.discountValue || 0) / 100);
+        } else {
+            discountAmount = Number(appliedCoupon.discountValue || 0);
+        }
+
+        if (discountAmount > subtotal) discountAmount = subtotal;
+    }
+
+    const finalTotal = subtotal - discountAmount;
+    subtotalEl.textContent = "Subtotal: €" + subtotal.toFixed(2) + " | Total: €" + finalTotal.toFixed(2);
+    discountRow.textContent = discountAmount > 0
+        ? "Coupon discount: -€" + discountAmount.toFixed(2)
+        : "No coupon discount";
+
+    localStorage.setItem('cartTotals', JSON.stringify({
+        subtotal,
+        discountAmount,
+        finalTotal
+    }));
 }
 
 function changeQuantity(index, change) {
@@ -142,7 +180,42 @@ function updateCartCount() {
     document.getElementById('cart-count').textContent = totalItems;
 }
 updateCartCount();
+
+document.getElementById('apply-coupon-btn').addEventListener('click', function() {
+    const input = document.getElementById('coupon-code');
+    const message = document.getElementById('coupon-message');
+    const code = (input.value || '').trim().toUpperCase();
+    if (!code) {
+        message.textContent = 'Enter a valid coupon code.';
+        return;
+    }
+
+    const coupons = JSON.parse(localStorage.getItem(STORAGE_KEYS.coupons) || '[]');
+    const coupon = coupons.find((c) => c.code === code && c.active !== false);
+
+    if (!coupon) {
+        message.textContent = 'Coupon not found or inactive.';
+        localStorage.removeItem('appliedCoupon');
+        loadCart();
+        return;
+    }
+
+    if (coupon.expiresAt) {
+        const expiryDate = new Date(coupon.expiresAt + 'T23:59:59');
+        if (expiryDate < new Date()) {
+            message.textContent = 'Coupon is expired.';
+            localStorage.removeItem('appliedCoupon');
+            loadCart();
+            return;
+        }
+    }
+
+    localStorage.setItem('appliedCoupon', JSON.stringify(coupon));
+    message.textContent = 'Coupon applied: ' + coupon.code;
+    loadCart();
+});
 </script>
+    <script src="auth-nav.js"></script>
 </body>
 </html>
 

@@ -23,6 +23,7 @@
                 <a href="Shopping.html">Shop</a>
                 <a href="About_us.html">About us</a>
                 <a href="contact_us.html">Contact us</a>
+                <a href="admin.html">Admin</a>
             </div>
             <div class="account-cart-search">
                 <img src="search icon.png" alt="search" class="icon">
@@ -31,20 +32,7 @@
             </div>
         </div>
 <!-- Here we put the product for shopping --> 
-        <div class="products-container">
-            <div class="product-card">
-                <img src="Product1.png" alt="Product 1" class="product-image">
-             <a href="Product1.html"><button class="product-button">Everlasting Vanilla</button></a>
-            </div>
-            <div class="product-card">
-                <img src="Product2.png" alt="Product 2" class="product-image">
-             <a href="Product2.html"><button class="product-button">Product 2</button></a>
-            </div>
-            <div class="product-card">
-                <img src="Product3.png" alt="Product 3" class="product-image">
-                <a href="Product3.html"><button class="product-button">Product 3</button></a>
-            </div>
-        </div>
+        <div class="products-container" id="products-container"></div>
 
     <footer>
         <!-- footer: terms and conditions, policies, social media icons -->
@@ -58,12 +46,91 @@
         </div>
     </footer>
     <script>
+        const STORAGE_KEYS = {
+            products: 'aurelleProducts'
+        };
+
         function updateCartCount() {
             const cart = JSON.parse(localStorage.getItem('cart')) || [];
             const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
             document.getElementById('cart-count').textContent = totalItems;
         }
+
+        function seedProductsIfNeeded() {
+            const defaults = [
+                {
+                    id: 'product1',
+                    name: 'Everlasting Vanilla',
+                    image: 'Product1.png',
+                    pageLink: 'Product1.html',
+                    visible: true,
+                    prices: { '30': 30, '50': 50, '100': 100 },
+                    notes: {
+                        top: 'Bergamot, Orange flower',
+                        heart: 'Aurantiol, Rose, Oakwood, Geranium',
+                        base: 'Vanilla, Amber, Sandalwood, Coconut',
+                        description: 'A soft, luminous fragrance that unfolds like a warm memory on the skin.'
+                    }
+                },
+                {
+                    id: 'product2',
+                    name: 'Product 2',
+                    image: 'Product2.png',
+                    pageLink: 'Product2.html',
+                    visible: true,
+                    prices: { '30': 30, '50': 50, '100': 100 },
+                    notes: { top: '...', heart: '...', base: '...', description: 'Product description.' }
+                },
+                {
+                    id: 'product3',
+                    name: 'Product 3',
+                    image: 'Product3.png',
+                    pageLink: 'Product3.html',
+                    visible: true,
+                    prices: { '30': 30, '50': 50, '100': 100 },
+                    notes: { top: '...', heart: '...', base: '...', description: 'Product description.' }
+                }
+            ];
+
+            const current = JSON.parse(localStorage.getItem(STORAGE_KEYS.products) || '[]');
+
+            if (!current.length) {
+                localStorage.setItem(STORAGE_KEYS.products, JSON.stringify(defaults));
+                return;
+            }
+
+            const existingIds = new Set(current.map((item) => item.id));
+            const missingDefaults = defaults.filter((item) => !existingIds.has(item.id));
+
+            if (missingDefaults.length) {
+                localStorage.setItem(STORAGE_KEYS.products, JSON.stringify([...current, ...missingDefaults]));
+            }
+        }
+
+        function renderProducts() {
+            const productsContainer = document.getElementById('products-container');
+            const products = JSON.parse(localStorage.getItem(STORAGE_KEYS.products) || '[]').filter((p) => p.visible !== false);
+
+            if (!products.length) {
+                productsContainer.innerHTML = '<p class="cart-empty-msg">No products available right now.</p>';
+                return;
+            }
+
+            productsContainer.innerHTML = products.map((product) => {
+                const targetLink = product.pageLink && product.pageLink.trim() ? product.pageLink : ('Product.html?id=' + encodeURIComponent(product.id));
+                return `
+                    <div class="product-card">
+                        <img src="${product.image}" alt="${product.name}" class="product-image">
+                        <a href="${targetLink}"><button class="product-button">${product.name}</button></a>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        seedProductsIfNeeded();
         updateCartCount();
+        renderProducts();
     </script>
+    <script src="auth-nav.js"></script>
 </body>
 </html>

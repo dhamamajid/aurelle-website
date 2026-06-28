@@ -5,7 +5,19 @@ const orderItemSchema = new mongoose.Schema({
   product: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Product',
-    required: true
+    required: false
+  },
+  productName: {
+    type: String,
+    default: ''
+  },
+  productImage: {
+    type: String,
+    default: ''
+  },
+  productVolume: {
+    type: String,
+    default: ''
   },
   quantity: {
     type: Number,
@@ -49,8 +61,20 @@ const orderSchema = new mongoose.Schema({
     required: true
   },
   phone: {
-    type: Number,
+    type: String,
     required: true
+  },
+  customerName: {
+    type: String,
+    default: ''
+  },
+  customerEmail: {
+    type: String,
+    default: ''
+  },
+  customerNote: {
+    type: String,
+    default: ''
   },
   status: {
     type: String,
@@ -64,6 +88,22 @@ const orderSchema = new mongoose.Schema({
   user: {
     type: mongoose.Schema.Types.ObjectId,
     ref: 'User'
+  },
+  couponCode: {
+    type: String,
+    default: ''
+  },
+  couponDiscount: {
+    type: Number,
+    default: 0
+  },
+  paymentMethod: {
+    type: String,
+    default: ''
+  },
+  customerUpdateMessage: {
+    type: String,
+    default: ''
   },
   dateOrdered: {
     type: Date,

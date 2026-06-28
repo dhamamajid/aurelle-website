@@ -23,6 +23,7 @@
                 <a href="Shopping.html">Shop</a>
                 <a href="About_us.html">About us</a>
                 <a href="contact_us.html">Contact us</a>
+                <a href="admin.html">Admin</a>
             </div>
             <div class="account-cart-search">
                 <img src="search icon.png" alt="search" class="icon">
@@ -66,6 +67,7 @@
     <div class="links">
       <a href="Register.html">Register a new account and be part of our brand</a>
       <a href="cart.html">Shop as a guest</a>
+            <button id="logout-btn" type="button" class="product-button" style="display:none;">Log out</button>
     </div>
   </main>
 
@@ -97,6 +99,7 @@
         // Initialize cart count on page load
         updateCartCount();
     </script>
+    <script src="auth-nav.js"></script>
 </body>
 
 
@@ -142,6 +145,17 @@
 
             // Optional: simple client-side validation (matches your style)
             const form = document.getElementById('login-form');
+            const logoutBtn = document.getElementById('logout-btn');
+            const existingSession = localStorage.getItem('aurelleAuthSession');
+
+            if (logoutBtn && existingSession) {
+                logoutBtn.style.display = 'inline-block';
+                logoutBtn.addEventListener('click', () => {
+                    localStorage.removeItem('aurelleAuthSession');
+                    window.location.reload();
+                });
+            }
+
             if (form) {
                 form.addEventListener('submit', (e) => {
                     const email = document.getElementById('email');
@@ -154,8 +168,14 @@
                         e.preventDefault();
                         alert('Please enter your password.');
                         pwd.focus();
+                    } else {
+                        e.preventDefault();
+                        localStorage.setItem('aurelleAuthSession', JSON.stringify({
+                            email: email.value.trim().toLowerCase(),
+                            loggedInAt: new Date().toISOString()
+                        }));
+                        window.location.href = 'index.html';
                     }
-                    // You can replace this with actual AJAX or backend call later
                 });
             }
         })();

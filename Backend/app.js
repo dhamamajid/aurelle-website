@@ -9,11 +9,21 @@ const productRoutes = require('./routes/products');
 const orderRoutes = require('./routes/orders');
 const categoryRoutes = require('./routes/categories');
 const userRoutes = require('./routes/users');
+const couponRoutes = require('./routes/coupons');
 
 // middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(morgan('tiny'));
+app.use((req, res, next) => {
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header('Access-Control-Allow-Methods', 'GET,POST,PUT,DELETE,OPTIONS');
+  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept, Authorization');
+  if (req.method === 'OPTIONS') {
+    return res.sendStatus(200);
+  }
+  next();
+});
 
 const apiUrl = process.env.API_URL || '/api/v1';
 const mongoUri = process.env.MONGODB_URI || process.env.CONNECTION_STRING || 'mongodb://127.0.0.1:27017/aurelle';
@@ -30,6 +40,7 @@ app.use(`${apiUrl}/orders`, orderRoutes);
 app.use(`${apiUrl}/categories`, categoryRoutes);
 app.use(`${apiUrl}/category`, categoryRoutes);
 app.use(`${apiUrl}/users`, userRoutes);
+app.use(`${apiUrl}/coupons`, couponRoutes);
 
 app.get(`${apiUrl}/health`, (req, res) => {
   res.json({

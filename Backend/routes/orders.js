@@ -20,9 +20,16 @@ router.post('/', (req, res) => {
     zip: req.body.zip,
     country: req.body.country,
     phone: req.body.phone,
+    customerName: req.body.customerName,
+    customerEmail: req.body.customerEmail,
+    customerNote: req.body.customerNote,
     status: req.body.status || 'Pending',
     totalPrice: req.body.totalPrice,
     user: req.body.user,
+    couponCode: req.body.couponCode,
+    couponDiscount: req.body.couponDiscount,
+    paymentMethod: req.body.paymentMethod,
+    customerUpdateMessage: req.body.customerUpdateMessage,
     dateOrdered: req.body.dateOrdered || new Date()
   });
 
@@ -37,6 +44,28 @@ router.post('/', (req, res) => {
         success: false
       });
     });
+});
+
+router.put('/:id', async (req, res) => {
+  try {
+    const updatedOrder = await Order.findByIdAndUpdate(
+      req.params.id,
+      {
+        status: req.body.status,
+        customerUpdateMessage: req.body.customerUpdateMessage,
+        paymentMethod: req.body.paymentMethod
+      },
+      { new: true }
+    );
+
+    if (!updatedOrder) {
+      return res.status(404).json({ success: false, message: 'Order not found' });
+    }
+
+    res.json({ success: true, order: updatedOrder });
+  } catch (err) {
+    res.status(400).json({ success: false, error: err.message });
+  }
 });
 
 module.exports = router;

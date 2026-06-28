@@ -23,6 +23,7 @@
                 <a href="Shopping.html">Shop</a>
                 <a href="About_us.html">About us</a>
                 <a href="contact_us.html">Contact us</a>
+                <a href="admin.html">Admin</a>
             </div>
             <div class="account-cart-search">
                 <img src="search icon.png" alt="search" class="icon">
@@ -150,12 +151,13 @@
                 notes:     document.getElementById('order-notes').value.trim()
             };
             sessionStorage.setItem('deliveryInfo', JSON.stringify(deliveryInfo));
-            window.location.href = 'Order_summary.html';
+            window.location.href = 'order_summary.html';
         } catch(err) {
             alert('Something went wrong: ' + err.message);
         }
     });
 </script>
+    <script src="auth-nav.js"></script>
 </body>
 </html>
 

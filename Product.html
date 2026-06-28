@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aurelle - Product</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400..900;1,400..900&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="stylesheet.css">
+    <link rel="icon" href="logo.png" type="image/png">
+</head>
+<body class="page-product-dynamic">
+    <div class="wrapper">
+        <div class="top-bar">
+            <div class="logo-area">
+                <a href="index.html">
+                    <img src="logo.png" alt="Aurelle Logo" class="logo-image">
+                    <span>Aurelle</span>
+                </a>
+            </div>
+            <div class="nav-links">
+                <a href="Shopping.html">Shop</a>
+                <a href="About_us.html">About us</a>
+                <a href="contact_us.html">Contact us</a>
+                <a href="admin.html">Admin</a>
+            </div>
+            <div class="account-cart-search">
+                <img src="search icon.png" alt="search" class="icon">
+                <a href="cart.html" class="cart-link"><img src="cart icon.png" alt="Cart" class="icon"><span id="cart-count" class="cart-count">0</span></a>
+                <a href="Account.html"><img src="account icon.png" alt="Account" class="icon"></a>
+            </div>
+        </div>
+
+        <div class="product-layout">
+            <h2 class="product-title" id="product-title">Product</h2>
+
+            <div class="product-container">
+                <div class="product-image-section">
+                    <div class="product-image" id="productImageContainer">
+                        <div class="product-image-zoom-wrapper" id="zoomWrapper">
+                            <img src="Product1.png" alt="Aurelle Product" id="productImage">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="product-content">
+                    <div class="product-details">
+                        <h4>Top Notes</h4>
+                        <p id="top-notes">-</p>
+                        <h4>Heart Notes</h4>
+                        <p id="heart-notes">-</p>
+                        <h4>Base Notes</h4>
+                        <p id="base-notes">-</p>
+                    </div>
+
+                    <div class="product-description">
+                        <h4>Description</h4>
+                        <p id="product-description">-</p>
+                    </div>
+
+                    <p class="product-price" id="productPrice">€0.00</p>
+                    <label for="volume">Choose a volume size:</label>
+                    <select id="volume" name="volume">
+                        <option value="30">30 mL</option>
+                        <option value="50">50 mL</option>
+                        <option value="100">100 mL</option>
+                    </select>
+
+                    <button class="add-to-cart-button">Add to Cart</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <div class="Term-Policy">
+            <a href="Terms-and-conditions.html">Terms and Conditions</a>
+            <a href="Policies.html">Policies</a>
+        </div>
+        <div class="social-media">
+            <a href="https://www.instagram.com/aurelle.perfume/"><img src="instagram logo.png" alt="Instagram" class="icon"></a>
+            <a href="#"><img src="tiktok icon.png" alt="TikTok" class="icon"></a>
+        </div>
+    </footer>
+
+<script>
+    const STORAGE_KEYS = {
+        products: 'aurelleProducts'
+    };
+
+    function updateCartCount() {
+        const cart = JSON.parse(localStorage.getItem('cart')) || [];
+        const totalItems = cart.reduce((sum, item) => sum + (item.quantity || 0), 0);
+        document.getElementById('cart-count').textContent = totalItems;
+    }
+
+    function formatPrice(value) {
+        return '€' + Number(value || 0).toFixed(2);
+    }
+
+    const urlParams = new URLSearchParams(window.location.search);
+    const productId = urlParams.get('id');
+
+    const products = JSON.parse(localStorage.getItem(STORAGE_KEYS.products) || '[]');
+    let product = products.find((p) => p.id === productId);
+
+    if (!product) {
+        product = {
+            id: 'unknown',
+            name: 'Product Not Found',
+            image: 'Product1.png',
+            prices: { '30': 0, '50': 0, '100': 0 },
+            notes: { top: '-', heart: '-', base: '-', description: 'This product is not available.' }
+        };
+    }
+
+    document.getElementById('product-title').textContent = product.name;
+    document.getElementById('productImage').src = product.image;
+    document.getElementById('productImage').alt = product.name;
+    document.getElementById('top-notes').textContent = product.notes && product.notes.top ? product.notes.top : '-';
+    document.getElementById('heart-notes').textContent = product.notes && product.notes.heart ? product.notes.heart : '-';
+    document.getElementById('base-notes').textContent = product.notes && product.notes.base ? product.notes.base : '-';
+    document.getElementById('product-description').textContent = product.notes && product.notes.description ? product.notes.description : '-';
+
+    const volumeSelect = document.getElementById('volume');
+    const productPrice = document.getElementById('productPrice');
+
+    function updateDisplayedPrice() {
+        const selectedVolume = volumeSelect.value;
+        const price = product.prices && product.prices[selectedVolume] ? product.prices[selectedVolume] : 0;
+        productPrice.textContent = formatPrice(price);
+    }
+
+    volumeSelect.addEventListener('change', updateDisplayedPrice);
+    updateDisplayedPrice();
+
+    const zoomWrapper = document.getElementById('zoomWrapper');
+    const productImage = document.getElementById('productImage');
+
+    zoomWrapper.addEventListener('mousemove', function(e) {
+        const rect = zoomWrapper.getBoundingClientRect();
+        const x = e.clientX - rect.left;
+        const y = e.clientY - rect.top;
+        const xPercent = (x / rect.width) * 100;
+        const yPercent = (y / rect.height) * 100;
+
+        productImage.style.transformOrigin = xPercent + '% ' + yPercent + '%';
+        productImage.style.transform = 'scale(1.5)';
+    });
+
+    zoomWrapper.addEventListener('mouseleave', function() {
+        productImage.style.transform = 'scale(1)';
+        productImage.style.transformOrigin = 'center center';
+    });
+
+    document.querySelector('.add-to-cart-button').addEventListener('click', function() {
+        const selectedVolume = volumeSelect.value;
+        const selectedPrice = Number(product.prices && product.prices[selectedVolume] || 0);
+
+        const item = {
+            id: product.id,
+            name: product.name,
+            price: selectedPrice,
+            volume: selectedVolume + ' mL',
+            image: product.image,
+            quantity: 1
+        };
+
+        let cart = JSON.parse(localStorage.getItem('cart')) || [];
+        const existing = cart.find((c) => c.id === item.id && c.volume === item.volume);
+
+        if (existing) {
+            existing.quantity += 1;
+        } else {
+            cart.push(item);
+        }
+
+        localStorage.setItem('cart', JSON.stringify(cart));
+        updateCartCount();
+    });
+
+    updateCartCount();
+</script>
+    <script src="auth-nav.js"></script>
+</body>
+</html>

@@ -46,12 +46,16 @@ router.delete('/:id', (req, res) => {
         return res.status(400).json({ success: false, error: err.message });
     })});
 
-router.get('/:id', (req, res) => {
-    const catergory = await Category.findById(req.params.id);
-    if (!catergory) {
-        return res.status(500).json({ success: false, message: 'category not found!' });
+router.get('/:id', async (req, res) => {
+  try {
+    const category = await Category.findById(req.params.id);
+    if (!category) {
+      return res.status(404).json({ success: false, message: 'category not found!' });
     }
-    res.status(200).json(catergory);
+    res.status(200).json(category);
+  } catch (err) {
+    res.status(400).json({ success: false, error: err.message });
+  }
 });
 
 module.exports = router;
