@@ -25,7 +25,7 @@
                 <a href="admin.html">Admin</a>
             </div>
             <div class="account-cart-search">
-                <img src="search icon.png" alt="search" class="icon">
+                <a href="wishlist.html"><img src="wishlist.jpg" alt="Wishlist" class="icon"></a>
                 <a href="cart.html" class="cart-link"><img src="cart icon.png" alt="Cart" class="icon"><span id="cart-count" class="cart-count">0</span></a>
                 <a href="Account.html"><img src="account icon.png" alt="Account" class="icon"></a>
             </div>
@@ -67,6 +67,7 @@
                     </select>
 
                     <button class="add-to-cart-button">Add to Cart</button>
+                    <button class="product-button add-to-wishlist-button">Add to Wishlist</button>
                 </div>
             </div>
         </div>
@@ -87,6 +88,16 @@
     const STORAGE_KEYS = {
         products: 'aurelleProducts'
     };
+    const WISHLIST_KEY = 'aurelleWishlist';
+
+    function addToWishlist(item) {
+        const wishlist = JSON.parse(localStorage.getItem(WISHLIST_KEY) || '[]');
+        const exists = wishlist.find((entry) => entry.id === item.id && entry.volume === item.volume);
+        if (!exists) {
+            wishlist.push(item);
+            localStorage.setItem(WISHLIST_KEY, JSON.stringify(wishlist));
+        }
+    }
 
     function updateCartCount() {
         const cart = JSON.parse(localStorage.getItem('cart')) || [];
@@ -177,6 +188,19 @@
 
         localStorage.setItem('cart', JSON.stringify(cart));
         updateCartCount();
+    });
+
+    document.querySelector('.add-to-wishlist-button').addEventListener('click', function() {
+        const selectedVolume = volumeSelect.value;
+        const selectedPrice = Number(product.prices && product.prices[selectedVolume] || 0);
+        addToWishlist({
+            id: product.id,
+            name: product.name,
+            price: selectedPrice,
+            volume: selectedVolume + ' mL',
+            image: product.image,
+            link: 'Product.html?id=' + encodeURIComponent(product.id)
+        });
     });
 
     updateCartCount();

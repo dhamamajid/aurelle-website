@@ -14,14 +14,29 @@ html {
 }
 
 body {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
   font-size: 16px;
   line-height: 1.5;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
 }
 
 .wrapper {
+    flex: 1 0 auto;
   font-size: 16px;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif;
+}
+
+footer {
+        margin-top: auto;
+        width: 100%;
+    padding: 14px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
 }
 
 .terms-page {
@@ -231,6 +246,26 @@ body.page-contact .nav-links a[href="contact_us.html"]::after {
     background: rgb(255, 255, 255);
 }
 
+/* Laptop-only homepage spacing so footer stays visible without scrolling */
+@media (min-width: 1025px) and (max-width: 1700px) {
+    body.page-home .main-content {
+        min-height: 260px;
+        margin: 135px auto 80px auto;
+        padding: 28px 20px;
+    }
+
+    body.page-home h1 {
+        font-size: 7.3rem;
+        letter-spacing: 7px;
+        margin-bottom: 10px;
+    }
+
+    body.page-home .droplet-phrase {
+        font-size: 2.5rem;
+        letter-spacing: 4px;
+    }
+}
+
 body.page-cart .main-content,
 body.page-checkout .main-content,
 body.page-order-summary .main-content {
@@ -329,6 +364,10 @@ h1 {
     color: #fff;
 }
 
+body.page-shop .product-card .product-button {
+    border: none;
+}
+
 .cart-actions {
     position: fixed;
     bottom: 20px;
@@ -359,9 +398,7 @@ body.page-cart .cart-actions {
 }
 
 .Term-Policy {
-    position: fixed;
-    bottom: 20px;
-    left: 20px;
+    position: static;
     display: flex;
     gap: 20px;
     font-size: 1.5rem;
@@ -369,6 +406,7 @@ body.page-cart .cart-actions {
     letter-spacing: 1px;
     font-weight: 300;
     color: #000;
+    margin: 0;
 }
 
 .Term-Policy a {
@@ -378,11 +416,10 @@ body.page-cart .cart-actions {
 
 .social-media {
     display: flex;
-    position: fixed;
-    bottom: 20px;
-    right: 20px;
+    position: static;
     gap: 15px;  /* Space between account, cart, and search */
     flex: 0 0 auto;
+    margin: 0;
 }
 
 .social-media .icon {
@@ -603,10 +640,10 @@ body.page-cart .cart-actions {
     }
 
     .Term-Policy {
-        position: static;
         justify-content: center;
-        margin-top: 20px;
+        margin-top: 0;
         font-size: 0.95rem;
+        width: 100%;
     }
 
     .Term-Policy a {
@@ -615,9 +652,9 @@ body.page-cart .cart-actions {
     }
 
     .social-media {
-        position: static;
         justify-content: center;
-        margin-top: 20px;
+        margin-top: 0;
+        width: 100%;
     }
 
     .social-media .icon {
@@ -658,11 +695,11 @@ body.page-cart .cart-actions {
     }
 
     footer {
-        position: static;
         width: 100%;
         padding: 10px 15px;
         background: transparent;
         box-shadow: none;
+        justify-content: center;
     }
 
     .main-image {
@@ -1077,21 +1114,23 @@ body.page-cart .cart-actions {
     margin: 10px 0;
 }
 
-.add-to-cart-button {
+.add-to-cart-button,
+.add-to-wishlist-button {
     font-family: 'Times New Roman', Times, serif;
     padding: 12px 30px;
     background-color: #fff;
     border: 1px solid #000;
     color: #000;
-    font-size: 1rem;
+    font-size: 1.5rem;
     letter-spacing: 2px;
     cursor: pointer;
     transition: all 0.3s ease;
     margin-top: 10px;
-    width: fit-content;
+    width: 100%;
 }
 
-.add-to-cart-button:hover {
+.add-to-cart-button:hover,
+.add-to-wishlist-button:hover {
     background-color: #000;
     color: #fff;
 }
@@ -1197,7 +1236,8 @@ body.page-cart .cart-actions {
         font-size: 1rem;
     }
 
-    .add-to-cart-button {
+    .add-to-cart-button,
+    .add-to-wishlist-button {
         font-size: 0.9rem;
         padding: 10px 20px;
     }
@@ -1490,6 +1530,26 @@ body.page-cart .cart-actions {
     color: #fff;
 }
 
+#login-form .forgot-password-link {
+    align-self: center;
+    margin-top: -8px;
+    margin-bottom: -4px;
+    padding: 0;
+    border: none;
+    background: transparent;
+    color: #333;
+    font-family: 'Playfair Display', serif;
+    font-size: 1rem;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    text-decoration: underline;
+}
+
+#login-form .forgot-password-link:hover {
+    background: transparent;
+    color: #000;
+}
+
 .links {
     display: flex;
     flex-direction: column;
@@ -1592,9 +1652,10 @@ body.page-cart .cart-actions {
 .cart-item-remove {
     margin-top: 10px;
     align-self: flex-start;
-    padding: 6px 16px;
-    font-size: 0.85rem;
-    letter-spacing: 1px;
+    padding: 12px 30px;
+    font-size: 1rem;
+    letter-spacing: 2px;
+    width: fit-content;
 }
 
 #subtotal {
@@ -2059,6 +2120,21 @@ body.page-cart .cart-actions {
     flex-wrap: wrap;
 }
 
+body.page-wishlist .admin-tools-row .product-button {
+    min-width: 170px;
+    min-height: 42px;
+    padding: 10px 18px;
+    font-size: 0.95rem;
+    letter-spacing: 1px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+body.page-wishlist .cart-item-remove {
+    margin-top: 0;
+}
+
 .admin-list {
     display: flex;
     flex-direction: column;
@@ -2128,6 +2204,12 @@ body.page-cart .cart-actions {
 
 .admin-customer-item {
     align-items: flex-start;
+}
+
+.account-dashboard {
+    width: 100%;
+    max-width: 760px;
+    margin-top: 10px;
 }
 
 @media (max-width: 768px) {

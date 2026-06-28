@@ -26,8 +26,8 @@
                 <a href="admin.html">Admin</a>
             </div>
             <div class="account-cart-search">
-                <img src="search icon.png" alt="search" class="icon">
-              <a href="cart.html"><img src="cart icon.png" alt="Cart" class="icon"><span class="cart-count" id="cart-count">0</span></a>  
+                <a href="wishlist.html"><img src="wishlist.jpg" alt="Wishlist" class="icon"></a>
+                            <a href="cart.html" class="cart-link"><img src="cart icon.png" alt="Cart" class="icon"><span class="cart-count" id="cart-count">0</span></a>  
                <a href="Account.html"> <img src="account icon.png" alt="Account" class="icon"> </a>
             </div>
         </div>
@@ -112,16 +112,76 @@
             <a href="#"><img src="tiktok icon.png" alt="TikTok" class="icon"></a>
         </div>
     </footer>
-    <script src="auth-nav.js"></script>
-</body>
-
-
     <script>
+        const USERS_KEY = 'aurelleUsers';
+        const SESSION_KEY = 'aurelleAuthSession';
+        const API_BASE = 'http://localhost:3000/api/v1';
+
+        function parseJson(value, fallback) {
+            try {
+                return JSON.parse(value);
+            } catch (err) {
+                return fallback;
+            }
+        }
+
+        function getUsers() {
+            return parseJson(localStorage.getItem(USERS_KEY), []);
+        }
+
+        function saveUsers(users) {
+            localStorage.setItem(USERS_KEY, JSON.stringify(users));
+        }
+
+        function fallbackHash(input) {
+            let hash = 5381;
+            const text = String(input || '');
+            for (let i = 0; i < text.length; i += 1) {
+                hash = ((hash << 5) + hash) + text.charCodeAt(i);
+                hash |= 0;
+            }
+            return 'fallback-' + (hash >>> 0).toString(16);
+        }
+
+        async function sha256(input) {
+            try {
+                if (!window.crypto || !window.crypto.subtle) {
+                    return fallbackHash(input);
+                }
+                const encoder = new TextEncoder();
+                const data = encoder.encode(input);
+                const digest = await crypto.subtle.digest('SHA-256', data);
+                return Array.from(new Uint8Array(digest)).map((b) => b.toString(16).padStart(2, '0')).join('');
+            } catch (err) {
+                return fallbackHash(input);
+            }
+        }
+
+        async function syncUserToBackend(user) {
+            try {
+                await fetch(API_BASE + '/users', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        name: user.name,
+                        email: user.email,
+                        passwordHash: user.passwordHash,
+                        phone: user.phone || '',
+                        city: user.city || '',
+                        country: user.country || ''
+                    })
+                });
+            } catch (err) {
+                // Local account still works if backend is offline.
+            }
+        }
+
         function updateCartCount() {
-            const cart = JSON.parse(localStorage.getItem('cart')) || [];
-            const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+            const cart = parseJson(localStorage.getItem('cart'), []);
+            const totalItems = cart.reduce((sum, item) => sum + (item.quantity || 0), 0);
             document.getElementById('cart-count').textContent = totalItems;
         }
+
         updateCartCount();
     </script>
  <script>
@@ -184,23 +244,70 @@
             }
 
             if (form) {
-                form.addEventListener('submit', (e) => {
+                form.addEventListener('submit', async (e) => {
+                    e.preventDefault();
                     const email = document.getElementById('email');
+                    const confirmEmail = document.getElementById('confirm-email');
+                    const nameEl = document.getElementById('Name');
                     const pwd = document.getElementById('password');
+                    if (!nameEl.value.trim()) {
+                        alert('Please enter your name.');
+                        nameEl.focus();
+                        return;
+                    }
+
                     if (!email.value.trim()) {
-                        e.preventDefault();
                         alert('Please enter your e-mail address.');
                         email.focus();
-                    } else if (!pwd.value) {
-                        e.preventDefault();
+                        return;
+                    }
+
+                    if (email.value.trim().toLowerCase() !== confirmEmail.value.trim().toLowerCase()) {
+                        alert('Email and confirm email must match.');
+                        confirmEmail.focus();
+                        return;
+                    }
+
+                    if (!pwd.value) {
                         alert('Please enter your password.');
                         pwd.focus();
-                    } else if (pwd.value !== confirmPasswordEl.value) {
-                        e.preventDefault();
+                        return;
+                    }
+
+                    if (pwd.value !== confirmPasswordEl.value) {
                         alert('Passwords do not match. Please confirm exactly.');
                         confirmPasswordEl.focus();
+                        return;
                     }
-                    // You can replace this with actual AJAX or backend call later
+
+                    const normalizedEmail = email.value.trim().toLowerCase();
+                    const users = getUsers();
+                    if (users.some((u) => String(u.email || '').toLowerCase() === normalizedEmail)) {
+                        alert('An account with this email already exists. Please log in.');
+                        window.location.href = 'Account.html';
+                        return;
+                    }
+
+                    const user = {
+                        id: 'u-' + Date.now(),
+                        name: nameEl.value.trim(),
+                        email: normalizedEmail,
+                        passwordHash: await sha256(pwd.value),
+                        dateCreated: new Date().toISOString()
+                    };
+
+                    users.push(user);
+                    saveUsers(users);
+                    localStorage.setItem(SESSION_KEY, JSON.stringify({
+                        email: user.email,
+                        name: user.name,
+                        loggedInAt: new Date().toISOString()
+                    }));
+
+                    // Do not block registration flow on backend availability.
+                    syncUserToBackend(user);
+                    alert('Registration successful. Redirecting to your account.');
+                    window.location.href = 'Account.html';
                 });
             }
         })();
@@ -245,5 +352,7 @@
             }
         })();
     </script>
+    <script src="auth-nav.js"></script>
+</body>
 </html>
 

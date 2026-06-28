@@ -25,7 +25,7 @@
                 <a href="admin.html">Admin</a>
             </div>
             <div class="account-cart-search">
-                <img src="search icon.png" alt="search" class="icon">
+                <a href="wishlist.html"><img src="wishlist.jpg" alt="Wishlist" class="icon"></a>
                 <a href="cart.html" class="cart-link"><img src="cart icon.png" alt="Cart" class="icon"><span class="cart-count" id="cart-count">0</span></a>
                 <a href="Account.html"><img src="account icon.png" alt="Account" class="icon"></a>
             </div>
@@ -188,11 +188,28 @@
         return String(email || '').trim().toLowerCase().endsWith(ADMIN_EMAIL_DOMAIN);
     }
 
+    function fallbackHash(input) {
+        let hash = 5381;
+        const text = String(input || '');
+        for (let i = 0; i < text.length; i += 1) {
+            hash = ((hash << 5) + hash) + text.charCodeAt(i);
+            hash |= 0;
+        }
+        return 'fallback-' + (hash >>> 0).toString(16);
+    }
+
     async function sha256(input) {
-        const encoder = new TextEncoder();
-        const data = encoder.encode(input);
-        const digest = await crypto.subtle.digest('SHA-256', data);
-        return Array.from(new Uint8Array(digest)).map((b) => b.toString(16).padStart(2, '0')).join('');
+        try {
+            if (!window.crypto || !window.crypto.subtle) {
+                return fallbackHash(input);
+            }
+            const encoder = new TextEncoder();
+            const data = encoder.encode(input);
+            const digest = await crypto.subtle.digest('SHA-256', data);
+            return Array.from(new Uint8Array(digest)).map((b) => b.toString(16).padStart(2, '0')).join('');
+        } catch (err) {
+            return fallbackHash(input);
+        }
     }
 
     function getOwnerConfig() {
@@ -663,6 +680,7 @@
                             <option ${o.status === 'Processing' ? 'selected' : ''}>Processing</option>
                             <option ${o.status === 'Shipped' ? 'selected' : ''}>Shipped</option>
                             <option ${o.status === 'Delivered' ? 'selected' : ''}>Delivered</option>
+                            <option ${o.status === 'Received' ? 'selected' : ''}>Received</option>
                             <option ${o.status === 'Cancelled' ? 'selected' : ''}>Cancelled</option>
                         </select>
                         <input id="msg-${o.id}" type="text" placeholder="Message to customer" value="${(o.customerUpdateMessage || '').replace(/"/g, '&quot;')}">

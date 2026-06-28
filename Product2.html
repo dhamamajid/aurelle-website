@@ -26,7 +26,7 @@
                 <a href="admin.html">Admin</a>
             </div>
             <div class="account-cart-search">
-                <img src="search icon.png" alt="search" class="icon">
+                <a href="wishlist.html"><img src="wishlist.jpg" alt="Wishlist" class="icon"></a>
                 <a href="cart.html" class="cart-link"><img src="cart icon.png" alt="Cart" class="icon"><span id="cart-count" class="cart-count">0</span></a> 
                 <a href="Account.html"><img src="account icon.png" alt="Account" class="icon"></a>
             </div>
@@ -68,6 +68,7 @@
                 </select>
 
             <button class="add-to-cart-button">Add to Cart</button>
+            <button class="product-button add-to-wishlist-button">Add to Wishlist</button>
 
             
 
@@ -117,6 +118,16 @@
         // Dynamic pricing based on volume
         const volumeSelect = document.getElementById('volume');
         const productPrice = document.getElementById('productPrice');
+        const WISHLIST_KEY = 'aurelleWishlist';
+
+        function addToWishlist(item) {
+            const wishlist = JSON.parse(localStorage.getItem(WISHLIST_KEY) || '[]');
+            const exists = wishlist.find((entry) => entry.id === item.id && entry.volume === item.volume);
+            if (!exists) {
+                wishlist.push(item);
+                localStorage.setItem(WISHLIST_KEY, JSON.stringify(wishlist));
+            }
+        }
         
         // Price mapping for volumes
         const volumePrices = {
@@ -173,6 +184,18 @@ function updateCartCount() {
 
 // Initialize cart count on page load
 updateCartCount();
+
+document.querySelector('.add-to-wishlist-button').addEventListener('click', function() {
+    const item = {
+        id: 'product2',
+        name: 'Product 2',
+        price: parseFloat(document.getElementById('productPrice').textContent.replace(/[^0-9.]/g, '')),
+        volume: document.getElementById('volume').value + ' mL',
+        image: document.getElementById('productImage').src,
+        link: 'Product2.html'
+    };
+    addToWishlist(item);
+});
     </script>
     <script>
     // Reviews script for Product2

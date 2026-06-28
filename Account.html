@@ -26,52 +26,62 @@
                 <a href="admin.html">Admin</a>
             </div>
             <div class="account-cart-search">
-                <img src="search icon.png" alt="search" class="icon">
+                <a href="wishlist.html"><img src="wishlist.jpg" alt="Wishlist" class="icon"></a>
                 <a href="cart.html" class="cart-link"><img src="cart icon.png" alt="Cart" class="icon"><span id="cart-count" class="cart-count">0</span></a> 
                 <a href="Account.html"> <img src="account icon.png" alt="Account" class="icon"> </a>
             </div>
         </div>
-    </div>
-    <div class="Log-in-content">
-        <h1 class="log-in-title-flex">Log in</h1>
-     <!-- Main Content -->
-  <main class="container">
-    <form id="login-form" action="#" method="POST">
+                <div class="Log-in-content">
+                        <h1 class="log-in-title-flex" id="account-page-title">Log in</h1>
+                        <main class="container">
+                                <p id="account-message" class="cart-item-meta" style="display:none;"></p>
 
-      <input 
-        type="email" 
-        id="email" 
-        name="email"
-        placeholder="e-mail" 
-        required
-        autocomplete="email"
-      >
-        <!-- Password field with toggle visibility inside the box -->
-      <div class="password-container">
-        <input 
-          type="password" 
-          id="password" 
-          name="password"
-          placeholder="password" 
-          required
-          autocomplete="current-password"
-        >
-        <button type="button" class="password-toggle" id="password-toggle" aria-label="Show or hide password">
-          <img src="open-eye.png" alt="Show password" id="password-toggle-icon">
-        </button>
-      </div>
+                                <form id="login-form" action="#" method="POST">
+                                        <input
+                                                type="email"
+                                                id="email"
+                                                name="email"
+                                                placeholder="e-mail"
+                                                required
+                                                autocomplete="email"
+                                        >
+                                        <div class="password-container">
+                                                <input
+                                                        type="password"
+                                                        id="password"
+                                                        name="password"
+                                                        placeholder="password"
+                                                        required
+                                                        autocomplete="current-password"
+                                                >
+                                                <button type="button" class="password-toggle" id="password-toggle" aria-label="Show or hide password">
+                                                        <img src="open-eye.png" alt="Show password" id="password-toggle-icon">
+                                                </button>
+                                        </div>
+                                            <button type="button" id="forgot-password-btn" class="forgot-password-link">Forgot password?</button>
 
-      <button type="submit">Log in</button>
-    </form>
+                                        <button type="submit">Log in</button>
+                                </form>
 
-    <div class="links">
-      <a href="Register.html">Register a new account and be part of our brand</a>
-      <a href="cart.html">Shop as a guest</a>
-            <button id="logout-btn" type="button" class="product-button" style="display:none;">Log out</button>
-    </div>
-  </main>
+                                <div class="links" id="account-public-links">
+                                        <a href="Register.html">Register a new account and be part of our brand</a>
+                                        <a href="cart.html">Shop as a guest</a>
+                                    <button id="logout-btn-public" type="button" class="product-button" style="display:none;">Log out</button>
+                                </div>
 
-    </div>
+                                <section id="account-dashboard" class="account-dashboard" style="display:none;">
+                                        <h2 class="summary-section-title">My Account</h2>
+                                        <div id="account-profile" class="admin-item"></div>
+                                        <div class="admin-tools-row" style="margin-top:10px;">
+                                                <button id="logout-btn" type="button" class="product-button">Log out</button>
+                                        </div>
+
+                                        <h3 class="summary-section-title" style="margin-top:18px;">My Orders</h3>
+                                        <div id="account-orders" class="admin-list"></div>
+                                </section>
+                        </main>
+                </div>
+        </div>
     <footer>
         <!-- footer: terms and conditions, policies, social media icons -->
         <div class="Term-Policy">
@@ -84,101 +94,299 @@
         </div>
     </footer>
     <script>
-        // Function to update cart count display
+        const USERS_KEY = 'aurelleUsers';
+        const SESSION_KEY = 'aurelleAuthSession';
+        const ORDERS_KEY = 'aurelleOrders';
+        const API_BASE = 'http://localhost:3000/api/v1';
+
+        function parseJson(value, fallback) {
+            try {
+                return JSON.parse(value);
+            } catch (err) {
+                return fallback;
+            }
+        }
+
+        function getUsers() {
+            const users = parseJson(localStorage.getItem(USERS_KEY), []);
+            return Array.isArray(users) ? users : [];
+        }
+
+        function getSession() {
+            return parseJson(localStorage.getItem(SESSION_KEY), null);
+        }
+
+
+        function fallbackHash(input) {
+            let hash = 5381;
+            const text = String(input || '');
+            for (let i = 0; i < text.length; i += 1) {
+                hash = ((hash << 5) + hash) + text.charCodeAt(i);
+                hash |= 0;
+            }
+            return 'fallback-' + (hash >>> 0).toString(16);
+        }
+
+        async function sha256(input) {
+            try {
+                if (!window.crypto || !window.crypto.subtle) {
+                    return fallbackHash(input);
+                }
+                const encoder = new TextEncoder();
+                const data = encoder.encode(input);
+                const digest = await crypto.subtle.digest('SHA-256', data);
+                return Array.from(new Uint8Array(digest)).map((b) => b.toString(16).padStart(2, '0')).join('');
+            } catch (err) {
+                return fallbackHash(input);
+            }
+        }
+
         function updateCartCount() {
-            const cart = JSON.parse(localStorage.getItem("cart")) || [];
-            let totalItems = 0;
-            
-            cart.forEach(item => {
-                totalItems += item.quantity;
-            });
-            
+            const cart = parseJson(localStorage.getItem('cart'), []);
+            const totalItems = cart.reduce((sum, item) => sum + (item.quantity || 0), 0);
             document.getElementById('cart-count').textContent = totalItems;
         }
 
-        // Initialize cart count on page load
-        updateCartCount();
-    </script>
-    <script src="auth-nav.js"></script>
-</body>
+        function setMessage(text) {
+            const msg = document.getElementById('account-message');
+            if (!text) {
+                msg.style.display = 'none';
+                msg.textContent = '';
+                return;
+            }
+            msg.style.display = 'block';
+            msg.textContent = text;
+        }
 
+        function formatMoney(value) {
+            return '€' + Number(value || 0).toFixed(2);
+        }
 
- <script>
-        (function() {
+        function formatDate(value) {
+            if (!value) return 'Unknown';
+            const date = new Date(value);
+            if (Number.isNaN(date.getTime())) return 'Unknown';
+            return date.toLocaleDateString();
+        }
+
+        async function syncOrderStatusToBackend(order) {
+            try {
+                await fetch(API_BASE + '/orders/' + encodeURIComponent(order.id), {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        status: order.status,
+                        customerUpdateMessage: order.customerUpdateMessage || '',
+                        paymentMethod: order.paymentMethod || ''
+                    })
+                });
+            } catch (err) {
+                // Keep local update if backend is offline.
+            }
+        }
+
+        function renderAccountDashboard(user) {
+            document.getElementById('account-page-title').textContent = 'My Account';
+            document.getElementById('login-form').style.display = 'none';
+            document.getElementById('account-public-links').style.display = 'none';
+            document.getElementById('account-dashboard').style.display = 'block';
+
+            const profile = document.getElementById('account-profile');
+            profile.innerHTML = `
+                <div>
+                    <strong>${user.name || 'Customer'}</strong><br>
+                    <span>Email: ${user.email}</span><br>
+                    <span>Customer since: ${formatDate(user.dateCreated)}</span>
+                </div>
+            `;
+
+            const sessionEmail = String(user.email || '').toLowerCase();
+            const allOrders = parseJson(localStorage.getItem(ORDERS_KEY), []);
+            const myOrders = allOrders
+                .filter((order) => String(order.customer && order.customer.email || '').toLowerCase() === sessionEmail)
+                .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+
+            const ordersContainer = document.getElementById('account-orders');
+            if (!myOrders.length) {
+                ordersContainer.innerHTML = '<p class="cart-empty-msg">No orders yet.</p>';
+                return;
+            }
+
+            ordersContainer.innerHTML = myOrders.map((order) => {
+                const canMarkReceived = order.status === 'Shipped' || order.status === 'Delivered';
+                const items = (order.items || []).map((item) => `${item.name} (${item.volume}) x${item.quantity}`).join(', ');
+                return `
+                    <div class="admin-item admin-order-item">
+                        <div>
+                            <strong>Order ${order.id}</strong><br>
+                            <span>Status: ${order.status || 'Pending'} | Placed: ${formatDate(order.createdAt)} | Total: ${formatMoney(order.finalTotal)}</span><br>
+                            <span>Items: ${items || 'No items'}</span><br>
+                            <span>Shipping: ${(order.customer && order.customer.address) || 'Unknown'}, ${(order.customer && order.customer.city) || 'Unknown'}, ${(order.customer && order.customer.country) || 'Unknown'}</span><br>
+                            <span>Admin message: ${order.customerUpdateMessage || 'None'}</span>
+                        </div>
+                        <div class="admin-item-actions">
+                            ${canMarkReceived ? `<button class="product-button" data-received-id="${order.id}">Received</button>` : ''}
+                        </div>
+                    </div>
+                `;
+            }).join('');
+
+            ordersContainer.querySelectorAll('[data-received-id]').forEach((button) => {
+                button.addEventListener('click', async function() {
+                    const id = this.getAttribute('data-received-id');
+                    const orders = parseJson(localStorage.getItem(ORDERS_KEY), []);
+                    const idx = orders.findIndex((o) => o.id === id);
+                    if (idx < 0) return;
+
+                    orders[idx].status = 'Received';
+                    orders[idx].receivedAt = new Date().toISOString();
+                    orders[idx].customerUpdateMessage = 'Customer confirmed order received on ' + formatDate(orders[idx].receivedAt);
+                    localStorage.setItem(ORDERS_KEY, JSON.stringify(orders));
+
+                    await syncOrderStatusToBackend(orders[idx]);
+                    renderAccountDashboard(user);
+                });
+            });
+        }
+
+        (function initAccountPage() {
+            updateCartCount();
+
             const toggleBtn = document.getElementById('password-toggle');
             const passwordField = document.getElementById('password');
             const toggleIcon = document.getElementById('password-toggle-icon');
-
+            const forgotPasswordBtn = document.getElementById('forgot-password-btn');
             if (toggleBtn && passwordField && toggleIcon) {
-                // Function to toggle visibility and update icon
-                const togglePassword = () => {
+                toggleBtn.addEventListener('click', function(e) {
+                    e.preventDefault();
                     const isPassword = passwordField.type === 'password';
                     passwordField.type = isPassword ? 'text' : 'password';
-                    // Switch icon: open-eye (hidden) → closed-eye (visible)
                     toggleIcon.src = isPassword ? 'closed-eye.png' : 'open-eye.png';
                     toggleIcon.alt = isPassword ? 'Hide password' : 'Show password';
-                    // Keep focus inside the input after toggle
                     passwordField.focus();
-                };
-
-                // Click event for the eye button
-                toggleBtn.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    togglePassword();
                 });
+            }
 
-                // Optional: allow keyboard activation (Enter / Space)
-                toggleBtn.addEventListener('keydown', (e) => {
-                    if (e.key === 'Enter' || e.key === ' ') {
-                        e.preventDefault();
-                        togglePassword();
+            if (forgotPasswordBtn) {
+                forgotPasswordBtn.addEventListener('click', async function() {
+                    const enteredEmail = window.prompt('Enter your account e-mail to reset password:');
+                    if (enteredEmail === null) return;
+
+                    const email = String(enteredEmail || '').trim().toLowerCase();
+                    if (!email) {
+                        setMessage('Please enter a valid e-mail address.');
+                        return;
                     }
-                });
 
-                // Ensure initial state is consistent
-                if (passwordField.type !== 'password') {
-                    passwordField.type = 'password';
-                    toggleIcon.src = 'open-eye.png';
-                    toggleIcon.alt = 'Show password';
+                    const usersNow = getUsers();
+                    const userIndex = usersNow.findIndex((item) => String(item.email || '').toLowerCase() === email);
+                    if (userIndex < 0) {
+                        setMessage('No account found with this email. Please register first.');
+                        return;
+                    }
+
+                    const newPassword = window.prompt('Enter your new password (minimum 6 characters):');
+                    if (newPassword === null) return;
+                    if (String(newPassword).length < 6) {
+                        setMessage('Password must be at least 6 characters long.');
+                        return;
+                    }
+
+                    const confirmPassword = window.prompt('Confirm your new password:');
+                    if (confirmPassword === null) return;
+                    if (newPassword !== confirmPassword) {
+                        setMessage('Passwords do not match. Please try again.');
+                        return;
+                    }
+
+                    usersNow[userIndex].passwordHash = await sha256(newPassword);
+                    usersNow[userIndex].updatedAt = new Date().toISOString();
+                    localStorage.setItem(USERS_KEY, JSON.stringify(usersNow));
+
+                    document.getElementById('email').value = email;
+                    document.getElementById('password').value = '';
+                    setMessage('Password reset successful. Please log in with your new password.');
+                    document.getElementById('password').focus();
+                });
+            }
+
+            const logoutBtn = document.getElementById('logout-btn');
+            const logoutBtnPublic = document.getElementById('logout-btn-public');
+            const clearSessionAndReload = function() {
+                localStorage.removeItem(SESSION_KEY);
+                window.location.reload();
+            };
+
+            if (logoutBtnPublic) {
+                if (getSession()) {
+                    logoutBtnPublic.style.display = 'inline-block';
+                }
+                logoutBtnPublic.addEventListener('click', clearSessionAndReload);
+            }
+
+            logoutBtn.addEventListener('click', function() {
+                clearSessionAndReload();
+            });
+
+            const session = getSession();
+            const users = getUsers();
+            if (session && session.email) {
+                const currentUser = users.find((user) => String(user.email || '').toLowerCase() === String(session.email).toLowerCase());
+
+                if (currentUser) {
+                    renderAccountDashboard(currentUser);
+                } else {
+                    localStorage.removeItem(SESSION_KEY);
+                    setMessage('Your session is not linked to a registered account. Please register first.');
                 }
             }
 
-            // Optional: simple client-side validation (matches your style)
             const form = document.getElementById('login-form');
-            const logoutBtn = document.getElementById('logout-btn');
-            const existingSession = localStorage.getItem('aurelleAuthSession');
+            form.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                const emailInput = document.getElementById('email');
+                const passwordInput = document.getElementById('password');
+                const email = String(emailInput.value || '').trim().toLowerCase();
+                const password = String(passwordInput.value || '');
 
-            if (logoutBtn && existingSession) {
-                logoutBtn.style.display = 'inline-block';
-                logoutBtn.addEventListener('click', () => {
-                    localStorage.removeItem('aurelleAuthSession');
-                    window.location.reload();
-                });
-            }
+                if (!email) {
+                    setMessage('Please enter your e-mail address.');
+                    emailInput.focus();
+                    return;
+                }
 
-            if (form) {
-                form.addEventListener('submit', (e) => {
-                    const email = document.getElementById('email');
-                    const pwd = document.getElementById('password');
-                    if (!email.value.trim()) {
-                        e.preventDefault();
-                        alert('Please enter your e-mail address.');
-                        email.focus();
-                    } else if (!pwd.value) {
-                        e.preventDefault();
-                        alert('Please enter your password.');
-                        pwd.focus();
-                    } else {
-                        e.preventDefault();
-                        localStorage.setItem('aurelleAuthSession', JSON.stringify({
-                            email: email.value.trim().toLowerCase(),
-                            loggedInAt: new Date().toISOString()
-                        }));
-                        window.location.href = 'index.html';
-                    }
-                });
-            }
+                if (!password) {
+                    setMessage('Please enter your password.');
+                    passwordInput.focus();
+                    return;
+                }
+
+                const usersNow = getUsers();
+                const user = users.find((item) => String(item.email || '').toLowerCase() === email);
+                const registeredUser = user || usersNow.find((item) => String(item.email || '').toLowerCase() === email);
+                if (!registeredUser) {
+                    setMessage('No account found with this email. Please register first.');
+                    return;
+                }
+
+                const passwordHash = await sha256(password);
+                if (registeredUser.passwordHash !== passwordHash) {
+                    setMessage('Incorrect password.');
+                    return;
+                }
+
+                localStorage.setItem(SESSION_KEY, JSON.stringify({
+                    email,
+                    name: registeredUser.name || '',
+                    loggedInAt: new Date().toISOString()
+                }));
+
+                setMessage('');
+                window.location.href = 'Account.html';
+            });
         })();
     </script>
+    <script src="auth-nav.js"></script>
+</body>
 </html>
 
