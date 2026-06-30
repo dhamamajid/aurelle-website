@@ -170,7 +170,8 @@ p {
     text-decoration: none;
     color: #000;
     position: relative;
-    display: inline-block;
+        /* Adjust this value to control spacing between Shop/About Us/Contact Us on mobile */
+        gap: 5px;
     padding-bottom: 4px;
 }
 .nav-links a::after {
@@ -202,7 +203,7 @@ body.page-contact .nav-links a[href="contact_us.html"]::after {
 .account-cart-search {
     display: flex;
     align-items: center;
-    gap: 15px;  /* Space between account, cart, and search */
+    gap: 35px;  /* Space between account, cart, and search */
     flex: 0 0 auto;
 }
 
@@ -605,20 +606,22 @@ body.page-cart .cart-actions {
     }
 
     .logo-area span {
-        font-size: 1.5rem;
+        font-size: 2rem;
         letter-spacing: 5px;
     }
 
     .logo-image {
-        height: 30px;
+        height: 45px;
     }
 
     .nav-links {
         width: 100%;
         flex-wrap: wrap;
         justify-content: center;
-        gap: 10px;
-        font-size: 1rem;
+        /* Tweak this value to increase/decrease spacing between mobile nav links */
+        gap: 55px;
+        font-size: 1.5rem;
+        letter-spacing: 1px;
     }
 
     .account-cart-search {
