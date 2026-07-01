@@ -619,8 +619,8 @@ body.page-cart .cart-actions {
         flex-wrap: wrap;
         justify-content: center;
         /* Tweak this value to increase/decrease spacing between mobile nav links */
-        gap: 55px;
-        font-size: 1.5rem;
+        gap: 30px;
+        font-size: 1rem;
         letter-spacing: 1px;
     }
 
