@@ -620,7 +620,7 @@ body.page-cart .cart-actions {
         justify-content: center;
         /* Tweak this value to increase/decrease spacing between mobile nav links */
         gap: 30px;
-        font-size: 1rem;
+        font-size: 1.2rem
         letter-spacing: 1px;
     }
 
